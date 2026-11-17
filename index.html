@@ -91,6 +91,7 @@ ul.pts{margin:6px 0 0;padding-left:20px}ul.pts li{margin:3px 0}
 .drill .card{margin:8px 0}
 .toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:#2d2a26;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:30;max-width:86vw;text-align:center}
 .recipe-card{padding:14px}.recipe-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.recipe-body{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}.recipe-body h4{font-size:13px;margin:0 0 5px;color:var(--soft);text-transform:uppercase;letter-spacing:.03em}.recipe-ings{display:flex;flex-wrap:wrap;gap:5px;margin:0}.recipe-ings span{background:var(--greenbg);color:#315f3f;border-radius:999px;padding:4px 8px;font-size:13px}.recipe-prep{white-space:pre-wrap;font-size:14px;margin:8px 0 0}.recipe-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.recipe-actions button{flex:1;min-width:110px}
+.food-progress{display:flex;align-items:center;gap:12px}.food-progress .ring{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:var(--greenbg);color:var(--green);font-weight:800;font-size:16px;flex:none}.food-group h3{display:flex;align-items:center;justify-content:space-between;gap:8px}.food-group .check:last-child{border-bottom:0}
 nav button{font-size:10px}nav button span{font-size:19px}
 </style>
 </head>
@@ -102,10 +103,10 @@ nav button{font-size:10px}nav button span{font-size:19px}
 <script src="config.js"></script>
 <script type="module">
 /* ============================================================
-   SVEZZAMENTO - webapp personale (versione 5)
+   SVEZZAMENTO - webapp personale (versione 6)
    Dati: Firebase (Authentication + Firestore). Senza config: modalità prova locale.
    ============================================================ */
-const APP_VERSION = 5;
+const APP_VERSION = 6;
 const NOTE_RILASCIO = [
   {v:1, titolo:'Prima versione', punti:[
     'Oggi: diario dei pasti con avvisi (cibi da evitare, allergeni nuovi, più fonti proteiche nello stesso pasto).',
@@ -218,6 +219,21 @@ const TAPPE = [
     'Verso i 2 anni può comparire selettività alimentare: si può provare a prevenirla.',
     'Non insistere, non distrarre, non usare il cibo come premio, non obbligare a finire la porzione.']}
 ];
+const ALIMENTI_CAT = {
+  cereali:{label:'Cereali, tuberi e derivati', ico:'🌾', voci:['Pasta di frumento','Pastina','Pane fresco tostato','Riso','Cous cous','Farro perlato','Orzo perlato','Miglio','Quinoa','Polenta / mais','Avena','Grano saraceno','Patata','Patata dolce','Gnocchi']},
+  legumi:{label:'Legumi e alternative vegetali', ico:'🫘', voci:['Lenticchie rosse decorticate','Lenticchie','Ceci decorticati','Fagioli cannellini','Fagioli borlotti','Piselli','Fave','Cicerchie','Lupini','Tofu al naturale','Tempeh al naturale','Pasta di legumi']},
+  verdure:{label:'Verdure e ortaggi', ico:'🥦', voci:['Zucchina','Zucca','Carota','Broccolo','Cavolfiore','Spinaci','Bietole','Finocchio','Pomodoro','Peperone','Melanzana','Fagiolini','Asparagi','Carciofo','Porro','Cipolla','Sedano','Cetriolo','Lattuga','Radicchio','Verza','Cavolo cappuccio','Cavolo nero','Rucola','Barbabietola','Rapa','Pastinaca','Indivia','Catalogna','Germogli di soia']},
+  frutta:{label:'Frutta', ico:'🍎', voci:['Mela','Pera','Banana','Pesca','Nettarina','Albicocca','Prugna / susina','Kiwi','Arancia','Mandarino / clementina','Limone','Fragola','Mirtilli','Lamponi','More','Uva','Ciliegia','Anguria','Melone','Mango','Papaya','Ananas','Cachi','Fico','Melagrana','Cocco','Frutto della passione','Litchi']},
+  carne:{label:'Carne', ico:'🍗', voci:['Pollo','Tacchino','Coniglio','Manzo','Vitello','Maiale','Agnello','Cavallo']},
+  pesce:{label:'Pesce', ico:'🐟', voci:['Nasello','Merluzzo','Salmone','Branzino / spigola','Orata','Sogliola','Sgombro','Sardine','Alici','Trota','Platessa','Persico','Triglia','Tonno','Rombo']},
+  uova:{label:'Uova', ico:'🥚', voci:['Uovo di gallina ben cotto']},
+  latticini:{label:'Latte e derivati', ico:'🥛', voci:['Yogurt bianco intero','Ricotta','Robiola','Crescenza','Mozzarella','Parmigiano / Grana','Caprino','Feta','Scamorza','Burro','Latte vaccino (dai 12 mesi come alimento)']},
+  frutta_secca:{label:'Frutta secca, arachidi e semi', ico:'🥜', voci:['Mandorla in crema o polvere','Nocciola in crema o polvere','Noce in crema o polvere','Pistacchio in crema o polvere','Anacardo in crema o polvere','Arachide in crema 100%','Pinoli tritati','Sesamo / tahina','Semi di chia ammollati','Semi di lino macinati','Semi di zucca macinati','Semi di girasole macinati','Castagna']},
+  condimenti:{label:'Grassi, aromi e altri sapori', ico:'🫒', voci:['Olio extravergine di oliva','Avocado','Basilico','Prezzemolo','Rosmarino','Salvia','Origano','Cannella','Curcuma','Vaniglia','Bevanda vegetale senza zuccheri','Cacao amaro (da confrontare con le regole familiari)']}
+};
+const alimentoId = (cat, nome) => 'food_' + cat + '_' + String(nome).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+const CATALOGO_ALIMENTI = Object.entries(ALIMENTI_CAT).flatMap(([categoria, c]) => c.voci.map(nome => ({id:alimentoId(categoria, nome), nome, categoria, custom:false})));
+
 const REGOLE = [
   ['Atteggiamento a tavola', ['Nei primi 2 anni si formano abitudini e imprinting che restano da adulti.','Sa autogestirsi in base a fame e sazietà; con dolci e cibi molto saporiti fa più fatica.','Condividi il pasto con almeno un membro della famiglia.','Non insistere, non distrarre, non usare il cibo come premio, non obbligare a finire la porzione.','Niente tabelle con quantità di riferimento: ogni bimbo ha bisogni diversi.']],
   ['Il piatto', ['Un quarto proteine, un quarto frutta e verdura, metà carboidrati.','Piatto unico oppure componenti separate: separate le riconosce meglio.','Il primo va fatto anche a cena, perché il pane non copre il fabbisogno di carboidrati.','Variare sempre; frutta e verdura di stagione, seguendo i 5 colori.']],
@@ -271,9 +287,9 @@ async function firebaseDB() {
 function showError(m) { const e = document.createElement('div'); e.className = 'warn red'; e.textContent = m; $('#app').prepend(e); setTimeout(() => e.remove(), 8000); }
 
 /* ---------- stato ---------- */
-const COLS = ['pasti','sintomi','allergeni','menu','spesa','piatti','settings','giorni','riferimenti','scorte'];
-const S = {pasti:[], sintomi:[], allergeni:[], menu:[], spesa:[], piatti:[], settings:[], giorni:[], riferimenti:[], scorte:[]};
-const ui = {tab:'oggi', day:today(), week:mondayOf(today()), sett:'freq', salute:'allergeni', altro:null, filtro:'tutti', per:30, stat:null, drill:null, sw:mondayOf(today()), q:'', ft:'', fs:''};
+const COLS = ['pasti','sintomi','allergeni','menu','spesa','piatti','alimenti','settings','giorni','riferimenti','scorte'];
+const S = {pasti:[], sintomi:[], allergeni:[], menu:[], spesa:[], piatti:[], alimenti:[], settings:[], giorni:[], riferimenti:[], scorte:[]};
+const ui = {tab:'oggi', day:today(), week:mondayOf(today()), sett:'freq', salute:'allergeni', altro:null, filtro:'tutti', per:30, stat:null, drill:null, sw:mondayOf(today()), q:'', ft:'', fs:'', piattiView:'ricette', aq:'', af:'tutti', ac:''};
 let F = {};  // stato dei moduli aperti
 const NASCITA_DEFAULT = '2026-06-06';
 const imp = () => { const s = S.settings.find(x => x.id === 'main') || {}; return {nome: s.nome || '', nascita: s.nascita || NASCITA_DEFAULT}; };
@@ -512,6 +528,8 @@ const A = {
   sett: el => { ui.sett = el.dataset.v; render(); },
   salute: el => { ui.salute = el.dataset.v; render(); },
   filtro: el => { ui.filtro = el.dataset.v; render(); },
+  piattiView: el => { ui.piattiView = el.dataset.v; render(); window.scrollTo(0, 0); },
+  alimentiFiltro: el => { ui.af = el.dataset.v; render(); },
   altro: el => { ui.altro = el.dataset.v || null; render(); window.scrollTo(0, 0); },
   vaiTappe: () => { ui.tab = 'altro'; ui.altro = 'tappe'; render(); window.scrollTo(0, 0); },
   logout: () => DB.logout(),
@@ -549,6 +567,9 @@ const A = {
     await DB.put('piatti', F.id, {nome:F.nome.trim(), prot:F.prot, ingredienti:F.ingredienti.trim(), preparazione:F.preparazione.trim(), fonte:F.fonte.trim(), note:F.note.trim(), stagione:F.stagione, tipo:F.tipoPiatto, piace:!!F.piace}); closeSheet();
   },
   delPiatto: async () => { if (confirm('Eliminare questo piatto?')) { await DB.remove('piatti', F.id); closeSheet(); } },
+  nuovoAlimento: () => { F = {tipo:'alimento', nome:'', categoria:'altro'}; openSheet(`<h1>Aggiungi alimento</h1><label class="f">Nome</label><input data-i="nome" placeholder="Es. Daikon"><label class="f">Categoria</label><select data-i="categoria">${Object.entries(ALIMENTI_CAT).map(([k,c]) => `<option value="${k}">${c.ico} ${c.label}</option>`).join('')}<option value="altro" selected>➕ Altro</option></select><div class="row" style="margin-top:16px"><button class="grow" data-a="salvaAlimento">Salva</button><button class="ghost" data-a="chiudi">Annulla</button></div>`); },
+  salvaAlimento: async () => { const nome = F.nome.trim(); if (!nome) { alert('Scrivi il nome dell’alimento.'); return; } const cat = F.categoria || 'altro'; const dup = alimentiCompleti().find(x => normName(x.nome) === normName(nome)); if (dup) { alert('Questo alimento è già presente nella lista.'); return; } const id = 'custom_' + Date.now().toString(36); await DB.put('alimenti', id, {nome, categoria:cat, custom:true, provato:false, data:''}); closeSheet(); toast('Alimento aggiunto'); },
+  delAlimento: async el => { if (confirm('Eliminare questo alimento personalizzato?')) await DB.remove('alimenti', el.dataset.id); },
   stella: async el => { const p = S.piatti.find(x => x.id === el.dataset.id); if (p) { const {id, ...rest} = p; await DB.put('piatti', id, {...rest, piace: !p.piace}); } },
   copiaSettPrec: async () => {
     const prev = S.menu.find(x => x.id === addDays(ui.week, -7));
@@ -574,7 +595,9 @@ const C = {
   newAll: el => { F.newAll[el.dataset.k] = el.checked; },
   spesaToggle: async el => { const i = S.spesa.find(x => x.id === el.dataset.id); if (i) { const {id, ...rest} = i; await DB.put('spesa', id, {...rest, fatto: el.checked}); } },
   menuT: el => salvaMenu(+el.dataset.d, el.dataset.m, 't', el.value),
-  menuP: el => salvaMenu(+el.dataset.d, el.dataset.m, 'p', el.value)
+  menuP: el => salvaMenu(+el.dataset.d, el.dataset.m, 'p', el.value),
+  alimentiCat: el => { ui.ac = el.value; render(); },
+  alimentoToggle: async el => { const id = el.dataset.id, old = S.alimenti.find(x => x.id === id), custom = !!(old && old.custom); if (el.checked) await DB.put('alimenti', id, {nome:el.dataset.nome, categoria:el.dataset.cat, custom, provato:true, data:today()}); else if (custom) await DB.put('alimenti', id, {nome:old.nome, categoria:old.categoria || 'altro', custom:true, provato:false, data:''}); else await DB.remove('alimenti', id); }
 };
 async function salvaMenu(d, m, campo, val) {
   const cur = S.menu.find(x => x.id === ui.week);
@@ -597,7 +620,7 @@ async function salvaMenu(d, m, campo, val) {
 document.addEventListener('click', e => { const el = e.target.closest('[data-a]'); if (!el) return; if (el.dataset.a === 'stella') e.stopPropagation(); const f = A[el.dataset.a]; if (f) f(el, e); });
 document.addEventListener('change', e => {
   const c = e.target.closest('[data-c]'); if (c && C[c.dataset.c]) { C[c.dataset.c](c, e); return; }
-  const i = e.target.closest('[data-i]'); if (i && i.type === 'date') onInput(i);
+  const i = e.target.closest('[data-i]'); if (i) onInput(i);
 });
 document.addEventListener('input', e => { const i = e.target.closest('[data-i]'); if (i) onInput(i); });
 document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.dataset.enter) { e.preventDefault(); A[e.target.dataset.enter](e.target); } });
@@ -1204,6 +1227,16 @@ NOTE_RILASCIO.push({v: 5, titolo: 'Menu settimanale equilibrato e sempre diverso
   'Documento per l’assistente, guida e pacchetto di pubblicazione aggiornati alla versione 5.'
 ]});
 
+NOTE_RILASCIO.push({v: 6, titolo: 'Lista degli alimenti da provare', punti: [
+  'Nuova vista Alimenti dentro Piatti, con un catalogo iniziale di cereali, legumi, verdure, frutta, carne, pesce, uova, latticini, frutta secca, semi, condimenti e aromi.',
+  'Ogni alimento si può segnare come provato con una spunta; l’app salva la data e sincronizza lo stato tra i due genitori tramite Firestore.',
+  'Ricerca, filtri per stato e categoria, raggruppamento per famiglia alimentare e indicatore di avanzamento.',
+  'È possibile aggiungere alimenti personali non presenti nel catalogo e rimuoverli in seguito.',
+  'Il catalogo è un promemoria organizzativo: modalità di preparazione, età e sicurezza restano quelle della Guida v3 e delle indicazioni del pediatra.',
+  'Documento per l’assistente, guida e pacchetto di pubblicazione aggiornati alla versione 6.'
+]});
+
+
 const V3_CONFLITTI = [
  ['Quantità e grammature','Gli appunti dicono di non usare tabelle perché ogni bambino ha bisogni diversi; alcuni documenti propongono grammi e porzioni.','Nessuna grammatura è usata come obiettivo nell’app.'],
  ['Carne','Appunti: 2 volte/settimana. Ricettario: 2-3. Documento “Quantità”: 3-4.','Obiettivo iniziale: 2.'],
@@ -1301,8 +1334,39 @@ function plistHtml() {
       <div class="recipe-actions">${ing.length ? `<button class="soft small" data-a="spesaPiatto" data-id="${p.id}">🛒 Alla spesa</button>` : ''}<button class="ghost small" data-a="dettPiatto" data-id="${p.id}">Apri / pianifica</button></div></article>`;
   }).join('');
 }
+function alimentiCompleti() {
+  const custom = S.alimenti.filter(x => x.custom && x.nome).map(x => ({id:x.id, nome:x.nome, categoria:x.categoria || 'altro', custom:true}));
+  const ids = new Set(CATALOGO_ALIMENTI.map(x => x.id));
+  return [...CATALOGO_ALIMENTI, ...custom.filter(x => !ids.has(x.id))];
+}
+function vAlimentiBody() {
+  const tutti = alimentiCompleti(), stato = new Map(S.alimenti.map(x => [x.id, x])), provati = tutti.filter(x => stato.get(x.id) && stato.get(x.id).provato).length;
+  const q = normName(ui.aq), lista = tutti.filter(x => {
+    const r = stato.get(x.id), done = !!(r && r.provato);
+    if (ui.af === 'provati' && !done) return false;
+    if (ui.af === 'daprovare' && done) return false;
+    if (ui.ac && x.categoria !== ui.ac) return false;
+    return !q || normName(x.nome).includes(q) || normName((ALIMENTI_CAT[x.categoria] || {}).label || x.categoria).includes(q);
+  });
+  const pctDone = tutti.length ? Math.round(provati / tutti.length * 100) : 0;
+  let h = `<div class="card food-progress"><div class="ring">${pctDone}%</div><div class="grow"><h3>${provati} di ${tutti.length} provati</h3><div class="muted small">Spunta un alimento la prima volta che viene proposto. La data viene salvata automaticamente.</div><div class="bar"><i style="width:${pctDone}%"></i></div></div></div>`;
+  h += `<div class="info">Il catalogo è un promemoria ampio, non un obbligo né una lista medica esaustiva. Proponi ogni alimento con taglio, consistenza ed età adatti; per dubbi o reazioni segui il pediatra. Gli allergeni restano anche nel tracker dedicato in Salute.</div>`;
+  h += `<input id="qAlimenti" data-filter="alimenti" placeholder="Cerca un alimento" value="${esc(ui.aq)}" style="margin:10px 0">`;
+  h += `<div class="chips" style="margin-bottom:8px">${[['tutti','Tutti'],['daprovare','Da provare'],['provati','Provati']].map(([k,l]) => `<button class="chip ${ui.af === k ? 'on' : ''}" data-a="alimentiFiltro" data-v="${k}">${l}</button>`).join('')}</div>`;
+  h += `<div class="row"><select data-c="alimentiCat"><option value="">Tutte le categorie</option>${Object.entries(ALIMENTI_CAT).map(([k,c]) => `<option value="${k}" ${ui.ac === k ? 'selected' : ''}>${c.ico} ${c.label}</option>`).join('')}<option value="altro" ${ui.ac === 'altro' ? 'selected' : ''}>➕ Altro</option></select><button class="soft" data-a="nuovoAlimento">+ Aggiungi</button></div>`;
+  const cats = [...new Set(lista.map(x => x.categoria))];
+  h += cats.map(cat => {
+    const meta = ALIMENTI_CAT[cat] || {label:'Altri alimenti', ico:'➕'}, items = lista.filter(x => x.categoria === cat).sort((a,b) => a.nome.localeCompare(b.nome,'it'));
+    const nDone = items.filter(x => { const r=stato.get(x.id); return r && r.provato; }).length;
+    return `<div class="card food-group"><h3><span>${meta.ico} ${esc(meta.label)}</span><span class="muted small">${nDone}/${items.length}</span></h3>${items.map(x => { const r = stato.get(x.id), done = !!(r && r.provato); return `<div class="check ${done ? 'done' : ''}"><input type="checkbox" ${done ? 'checked' : ''} data-c="alimentoToggle" data-id="${x.id}" data-nome="${esc(x.nome)}" data-cat="${x.categoria}"><div class="grow"><span>${esc(x.nome)}</span>${done && r.data ? `<div class="muted small">Provato il ${fmtLong(r.data)}</div>` : ''}</div>${x.custom ? `<button class="danger small" data-a="delAlimento" data-id="${x.id}" aria-label="Elimina">✕</button>` : ''}</div>`; }).join('')}</div>`;
+  }).join('');
+  if (!lista.length) h += `<div class="card muted">Nessun alimento corrisponde ai filtri.</div>`;
+  return h;
+}
 function vPiatti() {
-  let h = `<h1>Piatti</h1><div class="muted">${S.piatti.length} idee nel ricettario</div>`;
+  let h = `<h1>Piatti e alimenti</h1>` + seg([['ricette','Ricette'],['alimenti','Alimenti da provare']], ui.piattiView, 'piattiView');
+  if (ui.piattiView === 'alimenti') return h + vAlimentiBody();
+  h += `<div class="muted">${S.piatti.length} idee nel ricettario</div>`;
   if (S.piatti.length < 30) h += `<div class="info" style="margin-top:10px">Per caricare le ricette dei documenti (autunno, inverno, merende, minestre) vai in <b>Altro › Importa dati iniziali</b>.</div>`;
   h += `<input id="qPiatti" data-filter="piatti" placeholder="Cerca piatto o ingrediente" value="${esc(ui.q)}" style="margin:10px 0">`;
   h += `<div class="chips" style="margin-bottom:8px">` + [['tutti', 'Tutti'], ...PROT.map(k => [k, PROT_ICO[k] + ' ' + PROT_LBL[k]]), ['preferiti', '⭐ Piacciono'], ['daprovare', '🆕 Da provare']].map(([k, l]) => `<button class="chip ${ui.filtro === k ? 'on' : ''}" data-a="filtro" data-v="${k}">${l}</button>`).join('') + `</div>`;
@@ -1311,6 +1375,7 @@ function vPiatti() {
   h += `<div class="info">Ogni piatto mostra qui ingredienti e preparazione disponibile. Non serve aprire il PDF; usa «Apri / pianifica» solo per programmare o modificare.</div><div style="margin:10px 0"><button class="block" data-a="nuovoPiatto">+ Nuovo piatto</button></div><div id="plist">${plistHtml()}</div>`;
   return h;
 }
+
 C.fTipo = el => { ui.ft = el.value; render(); };
 C.fStag = el => { ui.fs = el.value; render(); };
 function ingredientiLista(p) { return (p && p.ingredienti || '').split(';').map(x => x.trim()).filter(Boolean); }
@@ -1520,7 +1585,7 @@ async function importaDati(file) {
   } catch (e) { importing = false; say('Importazione non riuscita: ' + e.message); }
 }
 document.addEventListener('change', e => { if (e.target.id === 'fileImp' && e.target.files[0]) importaDati(e.target.files[0]); });
-document.addEventListener('input', e => { if (e.target.dataset && e.target.dataset.filter === 'piatti') { ui.q = e.target.value; const l = $('#plist'); if (l) l.innerHTML = plistHtml(); } });
+document.addEventListener('input', e => { if (!e.target.dataset) return; if (e.target.dataset.filter === 'piatti') { ui.q = e.target.value; const l = $('#plist'); if (l) l.innerHTML = plistHtml(); } else if (e.target.dataset.filter === 'alimenti') { ui.aq = e.target.value; render(); const q = $('#qAlimenti'); if (q) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); } } });
 
 /* ---- regole: nuove sezioni ---- */
 REGOLE.splice(1, 0, ['Merende', ['Mattina: piccolo spuntino, basta frutta fresca, cotta o in purea.', 'Pomeriggio: si combinano i «fantastici 6»: frutta fresca, crema di frutta secca 100%, yogurt bianco intero (o vegetale senza zuccheri), cereali soffiati, avena in fiocchi, latte vaccino o bevande vegetali (il latte vaccino come alimento solo dai 12 mesi).', 'La frutta secca è molto calorica: usala nello spuntino del pomeriggio, alternandola con altri alimenti.', 'Frutta fresca o cotta va bene anche a fine pasto.', 'Niente biscottini e prodotti per l\'infanzia (appunti).']]);
@@ -1545,7 +1610,7 @@ STACK E FILE
 - Regole di lavoro: a ogni modifica aumentare APP_VERSION, aggiungere una voce in NOTE_RILASCIO e aggiornare questo documento quando serve.
 
 SCHEDE
-Oggi (pasti del giorno, acqua e latte, sintomi) / Settimana (Frequenze, Menu con generatore v5, anteprima e spesa automatica, Spesa con importazione liste) / Piatti (ricettario con ricerca, filtri e ricetta visibile direttamente nella lista) / Salute (Allergeni, Sintomi) / Statistiche (29 schede cliccabili con drill-down) / Altro (Regole, Tappe, Guida v3 e fonti, Dispensa e congelatore, Frutta e verdura di stagione, Impostazioni, Novità, Importa dati iniziali, Documento, Guida).
+Oggi (pasti del giorno, acqua e latte, sintomi) / Settimana (Frequenze, Menu con generatore v5, anteprima e spesa automatica, Spesa con importazione liste) / Piatti e alimenti (Ricette con ricerca, filtri e ricetta visibile; Alimenti da provare con catalogo, ricerca, filtri e spunte sincronizzate) / Salute (Allergeni, Sintomi) / Statistiche (29 schede cliccabili con drill-down) / Altro (Regole, Tappe, Guida v3 e fonti, Dispensa e congelatore, Frutta e verdura di stagione, Impostazioni, Novità, Importa dati iniziali, Documento, Guida).
 
 DATI (collezioni Firestore)
 - pasti: data (AAAA-MM-GG), ora (HH:MM, facoltativa), momento (colazione, spuntino, pranzo, merenda, cena), alimenti (testo libero), comp (carbo, verdura, frutta), prot (carne, pesce, uova, legumi, formaggi), consistenza (liscia, schiacciata, pezzettini, solida), gradimento (no, ni, si), tavola (bool), note, autore.
@@ -1554,6 +1619,7 @@ DATI (collezioni Firestore)
 - menu: id = data del lunedì; giorni[0..6][pranzo|cena] = {t: piatto, p: fonte proteica, i: id del piatto se riconosciuto, a: eventuali accompagnamenti suggeriti}. Inserire un piatto del ricettario aggiunge automaticamente gli ingredienti alla spesa; per il menu v5 entrano anche gli accompagnamenti.
 - spesa: testo, fatto, ts.
 - piatti: nome, prot, ingredienti (voci separate da «; »), preparazione (facoltativa), fonte (documento e pagina), stagione, tipo (ricetta, merenda, idea), piace, note. Ingredienti e preparazione sono mostrati direttamente nella lista Piatti. Gli id che iniziano con imp_ vengono dall'importazione.
+- alimenti: per gli alimenti del catalogo esiste un documento solo quando vengono spuntati; nome, categoria, provato, data. Gli alimenti personali hanno anche custom=true e restano salvati anche se non provati. Il catalogo base è incorporato in index.html.
 - riferimenti: tipo dispensa, freezer, stagione (voci di frutta e verdura per autunno e inverno) e spesa (liste settimanali 1-4 di autunno e inverno), con sezioni[{titolo, voci}].
 - scorte: id = dispensa o freezer; ok = elenco delle voci già in casa.
 - giorni: id = data; acqua (ml), latte (numero di poppate o biberon).
@@ -1572,6 +1638,12 @@ Gli alimenti sono letti dal testo dei pasti (separati da virgole, «e», «con»
 
 PREFERENZE DI CHI USA L'APP
 Italiano, da telefono, budget zero (strumenti gratuiti), procedure passo passo senza competenze di sviluppo, avvisi non bloccanti, stile chiaro e rassicurante, statistiche cliccabili.
+
+VERSIONE 6 - ALIMENTI DA PROVARE
+- Dentro Piatti c’è la vista Alimenti da provare con catalogo incorporato, suddiviso in 10 famiglie alimentari.
+- Ricerca e filtri permettono di vedere tutti, da provare o provati e una singola categoria. L’avanzamento mostra numero e percentuale.
+- La spunta salva automaticamente la data nella collezione alimenti e si sincronizza tra i due genitori. Togliendo la spunta si azzera lo stato; gli alimenti personalizzati restano disponibili.
+- È possibile aggiungere o eliminare alimenti personalizzati. Il catalogo è organizzativo, non prescrittivo: sicurezza, età e preparazione restano nella Guida v3 e nelle indicazioni del pediatra.
 
 VERSIONE 5 - MENU EQUILIBRATO E VARIABILE
 - Il generatore lavora sui 14 slot pranzo/cena e rispetta i minimi/massimi configurati, distribuendo le fonti per evitare ripetizioni nello stesso giorno o in pasti consecutivi.
@@ -1600,7 +1672,7 @@ ${storia}
 PUNTI APERTI
 - Nome del bimbo da inserire in Altro > Impostazioni.
 - Completare facoltativamente il campo Preparazione per le idee importate che hanno solo ingredienti sintetici.
-- Promemoria per gli allergeni in osservazione non ancora previsti.
+- Valutare in futuro un promemoria dedicato per gli allergeni rimasti in osservazione.
 - Verificare periodicamente con il pediatra le regole familiari e le indicazioni più prudenziali.
 - Aggiornare le fonti se vengono aggiunti nuovi documenti alla cartella.
 `;
@@ -1648,7 +1720,7 @@ function vAltro() {
       return back + `<h1>Guida all'app</h1>` + [
         ['Oggi', 'Registra i pasti con «+ Pasto» (anche l\'ora). Mentre scrivi gli alimenti ti avvisa se c\'è qualcosa da evitare o un allergene nuovo. Sotto trovi acqua e latte con i tasti rapidi.'],
         ['Settimana', 'Frequenze: contatori. Menu: scegli un piatto oppure tocca «Genera menu equilibrato». Controlla l’anteprima, rigenera se vuoi, quindi applica: gli ingredienti entrano automaticamente nella Spesa. Se hai già inserito piatti puoi completare solo gli spazi vuoti o creare un menu nuovo.'],
-        ['Piatti', 'Il ricettario mostra ingredienti, preparazione disponibile, note e fonte direttamente nella lista. Cerca o filtra; usa «Apri / pianifica» per metterlo nel menu, modificarlo o segnarlo come mangiato.'],
+        ['Piatti e alimenti', 'In Ricette trovi ingredienti, preparazione, note e fonte. In Alimenti da provare trovi il catalogo completo: cerca, filtra e spunta ciò che è stato provato; la data si salva automaticamente. Puoi aggiungere alimenti personali.'],
         ['Salute', 'Allergeni: segna quando introduci ciascuno e l\'esito. Sintomi: cacca, rigurgito, pelle e altro.'],
         ['Statistiche', 'Tocca una scheda, poi un grafico o una riga per vedere i pasti dietro al numero. In alto scegli il periodo. Per i pasti toccati si può anche correggere il dato.'],
         ['Aggiornamenti', 'Dopo un aggiornamento chiudi del tutto l\'app e riaprila. Il numero di versione è in fondo a questa pagina Altro.']
