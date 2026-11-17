@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+<title id="title">Logo Svezzamento</title>
+<desc id="desc">Una ciotola verde con alimenti colorati e un cucchiaio color pesca su sfondo crema.</desc>
+<rect width="1024" height="1024" fill="#FAF6F0"/>
+<circle cx="512" cy="512" r="370" fill="#E6F1EA"/>
+<g transform="rotate(13 730 390)">
+  <rect x="698" y="245" width="54" height="390" rx="27" fill="#E8A87C"/>
+  <ellipse cx="725" cy="229" rx="70" ry="92" fill="#E8A87C"/>
+  <ellipse cx="725" cy="226" rx="35" ry="53" fill="#F7D2B8"/>
+</g>
+<circle cx="370" cy="445" r="86" fill="#E8A87C"/>
+<circle cx="512" cy="404" r="94" fill="#F1C75B"/>
+<circle cx="650" cy="449" r="82" fill="#75A884"/>
+<path d="M250 478h524c-18 183-119 300-262 300S268 661 250 478Z" fill="#5B8F6B"/>
+<rect x="222" y="452" width="580" height="82" rx="41" fill="#487B58"/>
+<path d="M410 612c55 45 149 45 204 0" fill="none" stroke="#FAF6F0" stroke-width="34" stroke-linecap="round"/>
+<path d="M472 317c-26-59 17-105 75-114-4 62-28 104-75 114Z" fill="#5B8F6B"/>
+</svg>
