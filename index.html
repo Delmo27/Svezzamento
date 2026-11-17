@@ -90,6 +90,7 @@ ul.pts{margin:6px 0 0;padding-left:20px}ul.pts li{margin:3px 0}
 .drill{border:2px solid var(--green);border-radius:16px;padding:10px 12px;margin:14px 0;background:#fcfffc}
 .drill .card{margin:8px 0}
 .toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:#2d2a26;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:30;max-width:86vw;text-align:center}
+.recipe-card{padding:14px}.recipe-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.recipe-body{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}.recipe-body h4{font-size:13px;margin:0 0 5px;color:var(--soft);text-transform:uppercase;letter-spacing:.03em}.recipe-ings{display:flex;flex-wrap:wrap;gap:5px;margin:0}.recipe-ings span{background:var(--greenbg);color:#315f3f;border-radius:999px;padding:4px 8px;font-size:13px}.recipe-prep{white-space:pre-wrap;font-size:14px;margin:8px 0 0}.recipe-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.recipe-actions button{flex:1;min-width:110px}
 nav button{font-size:10px}nav button span{font-size:19px}
 </style>
 </head>
@@ -101,10 +102,10 @@ nav button{font-size:10px}nav button span{font-size:19px}
 <script src="config.js"></script>
 <script type="module">
 /* ============================================================
-   SVEZZAMENTO - webapp personale (versione 3)
+   SVEZZAMENTO - webapp personale (versione 4)
    Dati: Firebase (Authentication + Firestore). Senza config: modalità prova locale.
    ============================================================ */
-const APP_VERSION = 3;
+const APP_VERSION = 4;
 const NOTE_RILASCIO = [
   {v:1, titolo:'Prima versione', punti:[
     'Oggi: diario dei pasti con avvisi (cibi da evitare, allergeni nuovi, più fonti proteiche nello stesso pasto).',
@@ -398,7 +399,7 @@ function vSettimana() {
         return `<div class="muted small" style="margin-top:6px">${MOMENTI[m]}</div><div class="mrow"><input list="piattiList" placeholder="Piatto" value="${esc(c.t || '')}" data-c="menuT" data-d="${d}" data-m="${m}"><select data-c="menuP" data-d="${d}" data-m="${m}"><option value="">Proteina</option>${PROT.map(k => `<option value="${k}" ${c.p === k ? 'selected' : ''}>${PROT_LBL[k]}</option>`).join('')}</select></div>`;
       }).join('') + `</div>`;
     }
-    h += `<button class="block" data-a="proponiMenu">✨ Proponi un menu</button><div class="row" style="margin-top:8px"><button class="soft grow" data-a="copiaSettPrec">Copia dalla scorsa settimana</button><button class="soft grow" data-a="spesaMenu">🛒 Spesa dal menu</button></div>`;
+    h += `<div class="info">Quando scegli un piatto del ricettario, i suoi ingredienti entrano automaticamente nella Spesa. Le voci già presenti non vengono duplicate.</div><button class="block" data-a="proponiMenu">✨ Proponi un menu</button><div class="row" style="margin-top:8px"><button class="soft grow" data-a="copiaSettPrec">Copia dalla scorsa settimana</button><button class="soft grow" data-a="spesaMenu">🛒 Ricalcola spesa</button></div>`;
   } else {
     h += `<div class="row" style="margin:10px 0"><input id="nuovaSpesa" placeholder="Aggiungi alla spesa" data-enter="addSpesa"><button data-a="addSpesa">+</button></div>`;
     h += `<div class="row wrap" style="margin-bottom:10px"><button class="soft small" data-a="importaLista">📋 Importa una lista</button><button class="soft small" data-a="scorteMancano" data-t="tutte">🧊 Dalle scorte mancanti</button></div>`;
@@ -478,12 +479,13 @@ function formSintomo(s = {}) {
   ${F.id ? `<button class="danger block" style="margin-top:10px" data-a="delSintomo">Elimina</button>` : ''}`);
 }
 function formPiatto(p = {}) {
-  F = {tipo:'piatto', id:p.id || null, nome:p.nome || '', prot:p.prot || '', ingredienti:p.ingredienti || '', fonte:p.fonte || '', note:p.note || '', piace:!!p.piace};
+  F = {tipo:'piatto', id:p.id || null, nome:p.nome || '', prot:p.prot || '', ingredienti:p.ingredienti || '', preparazione:p.preparazione || '', fonte:p.fonte || '', note:p.note || '', stagione:p.stagione || '', tipoPiatto:p.tipo || 'ricetta', piace:!!p.piace};
   openSheet(`<h1>${F.id ? 'Modifica piatto' : 'Nuovo piatto'}</h1>
   <label class="f">Nome</label><input data-i="nome" value="${esc(F.nome)}" placeholder="Es. Pasta con ragù di lenticchie">
   <label class="f">Fonte proteica</label><div class="chips"><button type="button" class="chip ${!F.prot ? 'on' : ''}" data-a="tPiattoProt" data-v="">Nessuna</button>${PROT.map(k => `<button type="button" class="chip ${F.prot === k ? 'on' : ''}" data-a="tPiattoProt" data-v="${k}">${PROT_ICO[k]} ${PROT_LBL[k]}</button>`).join('')}</div>
-  <label class="f">Ingredienti principali</label><textarea data-i="ingredienti">${esc(F.ingredienti)}</textarea>
-  <label class="f">Dove trovare la ricetta</label><input data-i="fonte" value="${esc(F.fonte)}" placeholder="Es. Ricettario.pdf, pagina 4">
+  <label class="f">Ingredienti (separati da punto e virgola)</label><textarea data-i="ingredienti">${esc(F.ingredienti)}</textarea>
+  <label class="f">Preparazione / ricetta (facoltativa)</label><textarea data-i="preparazione" placeholder="Scrivi qui il procedimento, così resta visibile direttamente nella lista Piatti">${esc(F.preparazione)}</textarea>
+  <label class="f">Fonte originale</label><input data-i="fonte" value="${esc(F.fonte)}" placeholder="Es. Ricettario.pdf, pagina 4">
   <label class="f">Note</label><textarea data-i="note">${esc(F.note)}</textarea>
   <label class="chk" style="margin-top:12px"><input type="checkbox" data-i="piace" ${F.piace ? 'checked' : ''}> Gli piace</label>
   <div class="row" style="margin-top:16px"><button class="grow" data-a="salvaPiatto">Salva</button><button class="ghost" data-a="chiudi">Annulla</button></div>
@@ -544,7 +546,7 @@ const A = {
   tPiattoProt: el => { F.prot = el.dataset.v; el.parentElement.querySelectorAll('.chip').forEach(b => b.classList.toggle('on', b.dataset.v === F.prot)); },
   salvaPiatto: async () => {
     if (!F.nome.trim()) { alert('Scrivi il nome del piatto.'); return; }
-    await DB.put('piatti', F.id, {nome:F.nome.trim(), prot:F.prot, ingredienti:F.ingredienti.trim(), fonte:F.fonte.trim(), note:F.note.trim(), piace:!!F.piace}); closeSheet();
+    await DB.put('piatti', F.id, {nome:F.nome.trim(), prot:F.prot, ingredienti:F.ingredienti.trim(), preparazione:F.preparazione.trim(), fonte:F.fonte.trim(), note:F.note.trim(), stagione:F.stagione, tipo:F.tipoPiatto, piace:!!F.piace}); closeSheet();
   },
   delPiatto: async () => { if (confirm('Eliminare questo piatto?')) { await DB.remove('piatti', F.id); closeSheet(); } },
   stella: async el => { const p = S.piatti.find(x => x.id === el.dataset.id); if (p) { const {id, ...rest} = p; await DB.put('piatti', id, {...rest, piace: !p.piace}); } },
@@ -553,6 +555,8 @@ const A = {
     if (!prev || !prev.giorni) { alert('La settimana precedente non ha un menu.'); return; }
     if (S.menu.find(x => x.id === ui.week) && !confirm('Sostituire il menu di questa settimana?')) return;
     await DB.put('menu', ui.week, {giorni: prev.giorni});
+    const n = await spesaAdd(ingredientiDaMenu(prev.giorni));
+    toast(n ? `Menu copiato · ${n} ingredienti aggiunti alla spesa` : 'Menu copiato · spesa già aggiornata');
   },
   addSpesa: async () => { const i = $('#nuovaSpesa'); const t = i.value.trim(); if (!t) return; i.value = ''; await DB.put('spesa', null, {testo:t, fatto:false, ts:Date.now()}); },
   delSpesa: async el => { await DB.remove('spesa', el.dataset.id); },
@@ -577,7 +581,16 @@ async function salvaMenu(d, m, campo, val) {
   const giorni = JSON.parse(JSON.stringify((cur && cur.giorni) || {}));
   giorni[d] = giorni[d] || {}; giorni[d][m] = giorni[d][m] || {};
   giorni[d][m][campo] = val;
+  const piatto = campo === 't' ? piattoDaNome(val) : null;
+  if (campo === 't') {
+    giorni[d][m].i = piatto ? piatto.id : '';
+    if (piatto && piatto.prot) giorni[d][m].p = piatto.prot;
+  }
   await DB.put('menu', ui.week, {giorni});
+  if (piatto) {
+    const n = await spesaAdd(ingredientiLista(piatto));
+    toast(n ? `Menu salvato · ${n} ingredienti aggiunti alla spesa` : 'Menu salvato · spesa già aggiornata');
+  }
 }
 
 document.addEventListener('click', e => { const el = e.target.closest('[data-a]'); if (!el) return; if (el.dataset.a === 'stella') e.stopPropagation(); const f = A[el.dataset.a]; if (f) f(el, e); });
@@ -1172,6 +1185,14 @@ NOTE_RILASCIO.push({v: 3, titolo: 'Documentazione completa, sicurezza e fonti', 
   'Documento per l’assistente aggiornato alla versione 3.'
 ]});
 
+NOTE_RILASCIO.push({v: 4, titolo: 'Ricette nella lista e spesa automatica', punti: [
+  'Piatti: ingredienti, eventuale preparazione, note e fonte sono visibili direttamente nella pagina, senza aprire il documento originale.',
+  'Aggiunto il campo facoltativo Preparazione / ricetta ai piatti personali e importati.',
+  'Menu: scegliendo un piatto del ricettario, gli ingredienti vengono aggiunti automaticamente alla lista della spesa, senza duplicati.',
+  'La spesa automatica funziona anche con Pianifica, Proponi un menu e Copia dalla scorsa settimana; resta disponibile Ricalcola spesa come controllo.',
+  'Documento per l’assistente e pacchetto di pubblicazione aggiornati alla versione 4.'
+]});
+
 const V3_CONFLITTI = [
  ['Quantità e grammature','Gli appunti dicono di non usare tabelle perché ogni bambino ha bisogni diversi; alcuni documenti propongono grammi e porzioni.','Nessuna grammatura è usata come obiettivo nell’app.'],
  ['Carne','Appunti: 2 volte/settimana. Ricettario: 2-3. Documento “Quantità”: 3-4.','Obiettivo iniziale: 2.'],
@@ -1262,11 +1283,11 @@ function piattiFiltrati() {
 }
 function plistHtml() {
   const l = piattiFiltrati();
-  return `<div class="muted small" style="margin:6px 0">${l.length} ${l.length === 1 ? 'piatto' : 'piatti'}</div>` + l.map(p => {
-    const n = usoPiatto(p), st = (p.stagione || '').split(',').filter(Boolean);
-    return `<div class="card tap" data-a="dettPiatto" data-id="${p.id}"><div class="row between"><h3>${esc(p.nome)}</h3><button class="chip ${p.piace ? 'on' : ''}" data-a="stella" data-id="${p.id}">${p.piace ? '⭐' : '☆'}</button></div>
-      ${p.prot ? `<span class="tag peach">${PROT_ICO[p.prot]} ${PROT_LBL[p.prot]}</span>` : ''}${p.tipo === 'merenda' ? '<span class="tag blue">merenda</span>' : ''}${p.tipo === 'idea' ? '<span class="tag gray">solo idea</span>' : ''}${st.map(s => `<span class="tag amber">${s}</span>`).join('')}${n ? `<span class="tag">mangiato ${n}×</span>` : ''}
-      ${p.fonte ? `<div class="muted small">${esc(p.fonte)}</div>` : ''}</div>`;
+  return `<div class="muted small" style="margin:6px 0">${l.length} ${l.length === 1 ? 'piatto' : 'piatti'} · ricetta visibile qui sotto</div>` + l.map(p => {
+    const n = usoPiatto(p), st = (p.stagione || '').split(',').filter(Boolean), ing = ingredientiLista(p);
+    return `<article class="card recipe-card"><div class="recipe-head"><div><h3>${esc(p.nome)}</h3><div>${p.prot ? `<span class="tag peach">${PROT_ICO[p.prot]} ${PROT_LBL[p.prot]}</span>` : ''}${p.tipo === 'merenda' ? '<span class="tag blue">merenda</span>' : ''}${p.tipo === 'idea' ? '<span class="tag gray">idea</span>' : ''}${st.map(s => `<span class="tag amber">${s}</span>`).join('')}${n ? `<span class="tag">mangiato ${n}×</span>` : ''}</div></div><button class="chip ${p.piace ? 'on' : ''}" data-a="stella" data-id="${p.id}" aria-label="Preferito">${p.piace ? '⭐' : '☆'}</button></div>
+      <div class="recipe-body"><h4>Ricetta rapida</h4>${ing.length ? `<div class="recipe-ings">${ing.map(i => `<span>${esc(i)}</span>`).join('')}</div>` : '<div class="muted small">Ingredienti non ancora inseriti.</div>'}${p.preparazione ? `<div class="recipe-prep"><b>Preparazione:</b> ${esc(p.preparazione)}</div>` : ''}${p.note ? `<div class="muted small" style="margin-top:7px">📝 ${esc(p.note)}</div>` : ''}${p.fonte ? `<div class="muted small" style="margin-top:7px">Fonte: ${esc(p.fonte)}</div>` : ''}</div>
+      <div class="recipe-actions">${ing.length ? `<button class="soft small" data-a="spesaPiatto" data-id="${p.id}">🛒 Alla spesa</button>` : ''}<button class="ghost small" data-a="dettPiatto" data-id="${p.id}">Apri / pianifica</button></div></article>`;
   }).join('');
 }
 function vPiatti() {
@@ -1276,12 +1297,15 @@ function vPiatti() {
   h += `<div class="chips" style="margin-bottom:8px">` + [['tutti', 'Tutti'], ...PROT.map(k => [k, PROT_ICO[k] + ' ' + PROT_LBL[k]]), ['preferiti', '⭐ Piacciono'], ['daprovare', '🆕 Da provare']].map(([k, l]) => `<button class="chip ${ui.filtro === k ? 'on' : ''}" data-a="filtro" data-v="${k}">${l}</button>`).join('') + `</div>`;
   h += `<div class="row"><select data-c="fTipo"><option value="">Tutti i tipi</option><option value="ricetta" ${ui.ft === 'ricetta' ? 'selected' : ''}>Ricette</option><option value="merenda" ${ui.ft === 'merenda' ? 'selected' : ''}>Merende</option><option value="idea" ${ui.ft === 'idea' ? 'selected' : ''}>Idee base</option></select>
     <select data-c="fStag"><option value="">Tutte le stagioni</option><option value="ora" ${ui.fs === 'ora' ? 'selected' : ''}>Di stagione ora</option><option value="autunno" ${ui.fs === 'autunno' ? 'selected' : ''}>Autunno</option><option value="inverno" ${ui.fs === 'inverno' ? 'selected' : ''}>Inverno</option></select></div>`;
-  h += `<div style="margin:10px 0"><button class="block" data-a="nuovoPiatto">+ Nuovo piatto</button></div><div id="plist">${plistHtml()}</div>`;
+  h += `<div class="info">Ogni piatto mostra qui ingredienti e preparazione disponibile. Non serve aprire il PDF; usa «Apri / pianifica» solo per programmare o modificare.</div><div style="margin:10px 0"><button class="block" data-a="nuovoPiatto">+ Nuovo piatto</button></div><div id="plist">${plistHtml()}</div>`;
   return h;
 }
 C.fTipo = el => { ui.ft = el.value; render(); };
 C.fStag = el => { ui.fs = el.value; render(); };
-function ingredientiLista(p) { return (p.ingredienti || '').split(';').map(x => x.trim()).filter(Boolean); }
+function ingredientiLista(p) { return (p && p.ingredienti || '').split(';').map(x => x.trim()).filter(Boolean); }
+function piattoDaNome(nome) { const n = normName(nome); return n ? S.piatti.find(x => normName(x.nome) === n) : null; }
+function piattoDaSlot(c) { return c && ((c.i && S.piatti.find(x => x.id === c.i)) || piattoDaNome(c.t)); }
+function ingredientiDaMenu(giorni) { const out = []; for (const d of Object.keys(giorni || {})) for (const m of ['pranzo','cena']) { const p = piattoDaSlot(giorni[d] && giorni[d][m]); if (p) out.push(...ingredientiLista(p)); } return out; }
 A.dettPiatto = el => {
   const p = S.piatti.find(x => x.id === el.dataset.id); if (!p) return;
   const ing = ingredientiLista(p), n = usoPiatto(p), mesi = eta(imp().nascita).m;
@@ -1291,7 +1315,7 @@ A.dettPiatto = el => {
   openSheet(`<h1>${esc(p.nome)}</h1><div>${p.prot ? `<span class="tag peach">${PROT_ICO[p.prot]} ${PROT_LBL[p.prot]}</span>` : ''}${(p.stagione || '').split(',').filter(Boolean).map(s => `<span class="tag amber">${s}</span>`).join('')}${p.tipo === 'merenda' ? '<span class="tag blue">merenda</span>' : ''}</div>
     ${fl.evita.map(m => `<div class="warn">⚠️ ${esc(m)} (confrontalo con gli appunti prima di prepararlo)</div>`).join('')}
     ${ing.length ? `<h2>Ingredienti</h2><ul class="pts">${ing.map(i => `<li>${esc(i)}</li>`).join('')}</ul>` : '<div class="muted" style="margin-top:8px">Nessun ingrediente salvato: è solo un\'idea o la ricetta è nel documento.</div>'}
-    ${p.fonte ? `<div class="muted small" style="margin-top:8px">Dove trovare la ricetta: ${esc(p.fonte)}</div>` : ''}${p.note ? `<div class="muted small">📝 ${esc(p.note)}</div>` : ''}
+    ${p.preparazione ? `<h2>Preparazione</h2><div>${esc(p.preparazione)}</div>` : ''}${p.fonte ? `<div class="muted small" style="margin-top:8px">Fonte originale: ${esc(p.fonte)}</div>` : ''}${p.note ? `<div class="muted small">📝 ${esc(p.note)}</div>` : ''}
     <div class="muted small" style="margin-top:6px">${n ? `Mangiato ${n} ${n === 1 ? 'volta' : 'volte'}, l'ultima il ${fmtLong(ultimo.data)}` : 'Non ancora provato'}</div>
     <div id="pianBox"></div>
     <div class="row wrap" style="margin-top:14px">${ing.length ? `<button class="soft" data-a="spesaPiatto" data-id="${p.id}">🛒 Ingredienti alla spesa</button>` : ''}<button class="soft" data-a="pianifica" data-id="${p.id}">📅 Pianifica</button><button class="soft" data-a="mangiatoPiatto" data-id="${p.id}">🍽️ L'ha mangiato</button></div>
@@ -1303,15 +1327,17 @@ A.pianifica = el => {
   const dflt = addDays(today(), 1);
   $('#pianBox').innerHTML = `<div class="card"><label class="f" style="margin-top:0">Quando</label><div class="row"><input type="date" id="pnData" value="${dflt}"><select id="pnMom" style="width:110px"><option value="pranzo">Pranzo</option><option value="cena">Cena</option></select></div><div style="margin-top:10px"><button class="block" data-a="pianificaOk" data-id="${el.dataset.id}">Metti nel menu</button></div></div>`;
 };
-A.pianificaOk = async el => { const p = S.piatti.find(x => x.id === el.dataset.id), d = $('#pnData').value, m = $('#pnMom').value; if (!d) return; await setSlot(d, m, p.nome, p.prot || ''); closeSheet(); toast(`Aggiunto al menu: ${fmt(d)}, ${MOMENTI[m].toLowerCase()}`); };
-async function setSlot(dateStr, m, t, p) {
+A.pianificaOk = async el => { const p = S.piatti.find(x => x.id === el.dataset.id), d = $('#pnData').value, m = $('#pnMom').value; if (!d) return; const r = await setSlot(d, m, p.nome, p.prot || '', p.id); closeSheet(); toast(`Aggiunto al menu: ${fmt(d)}, ${MOMENTI[m].toLowerCase()} · ${r.n ? r.n + ' ingredienti aggiunti alla spesa' : 'spesa già aggiornata'}`); };
+async function setSlot(dateStr, m, t, p, id = '') {
   const ws = mondayOf(dateStr), idx = dowOf(dateStr), cur = S.menu.find(x => x.id === ws);
   const giorni = JSON.parse(JSON.stringify((cur && cur.giorni) || {}));
-  giorni[idx] = giorni[idx] || {}; giorni[idx][m] = {t, p};
+  const piatto = (id && S.piatti.find(x => x.id === id)) || piattoDaNome(t);
+  giorni[idx] = giorni[idx] || {}; giorni[idx][m] = {t, p: (piatto && piatto.prot) || p, i: piatto ? piatto.id : ''};
   await DB.put('menu', ws, {giorni});
+  return {n: piatto ? await spesaAdd(ingredientiLista(piatto)) : 0, trovato: !!piatto};
 }
 async function spesaAdd(lines) {
-  const have = new Set(S.spesa.filter(i => !i.fatto).map(i => normName(i.testo))); let n = 0;
+  const have = new Set(S.spesa.map(i => normName(i.testo))); let n = 0;
   for (const t of lines) { const x = String(t).trim(); if (!x || have.has(normName(x))) continue; have.add(normName(x)); await DB.put('spesa', null, {testo: x, fatto: false, ts: Date.now() + n}); n++; }
   return n;
 }
@@ -1321,12 +1347,9 @@ A.importaLista = () => {
 };
 A.addLista = async el => { const r = S.riferimenti.find(x => x.id === el.dataset.id); const n = await spesaAdd(r.sezioni.flatMap(s => s.voci)); toast(n ? `${n} voci aggiunte` : 'Erano già tutte presenti'); };
 A.spesaMenu = async () => {
-  const menu = S.menu.find(x => x.id === ui.week); let n = 0, trovati = 0;
-  if (menu && menu.giorni) for (const d of Object.keys(menu.giorni)) for (const m of ['pranzo', 'cena']) {
-    const c = menu.giorni[d][m]; if (!c || !c.t) continue;
-    const p = S.piatti.find(x => normName(x.nome) === normName(c.t)); if (p && p.ingredienti) { trovati++; n += await spesaAdd(ingredientiLista(p)); }
-  }
-  toast(trovati ? `${n} voci aggiunte (${trovati} piatti)` : 'Nel menu non ci sono piatti del ricettario con ingredienti');
+  const menu = S.menu.find(x => x.id === ui.week), lines = menu ? ingredientiDaMenu(menu.giorni) : [];
+  const n = await spesaAdd(lines);
+  toast(lines.length ? (n ? `${n} voci aggiunte alla spesa` : 'La spesa è già aggiornata') : 'Nel menu non ci sono piatti del ricettario con ingredienti');
 };
 A.scorteMancano = async el => {
   const ts = el.dataset.t === 'tutte' ? ['dispensa', 'freezer'] : [el.dataset.t]; let lines = [];
@@ -1345,7 +1368,7 @@ C.scorta = async el => {
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 A.proponiMenu = async () => {
   const ws = ui.week, F2 = getFreq(), menu = S.menu.find(x => x.id === ws) || {giorni: {}};
-  const giorni = JSON.parse(JSON.stringify(menu.giorni || {})), slots = [];
+  const giorni = JSON.parse(JSON.stringify(menu.giorni || {})), slots = [], nuoviPiatti = [];
   for (let d = 0; d < 7; d++) for (const m of ['pranzo', 'cena']) { const c = giorni[d] && giorni[d][m]; if (!(c && (c.t || c.p))) slots.push([d, m]); }
   if (!slots.length) { toast('Il menu di questa settimana è già pieno'); return; }
   const planned = {}; PROT.forEach(k => planned[k] = 0);
@@ -1361,11 +1384,12 @@ A.proponiMenu = async () => {
     const cands = S.piatti.filter(p => p.prot === k && p.tipo !== 'merenda' && !usati.has(p.id));
     const score = p => (p.piace ? 3 : 0) + ((p.stagione || '').includes(cur) || !p.stagione ? 2 : 0) + (p.ingredienti ? 1 : 0) - (usoPiatto(p) ? 2 : 0) + Math.random() * 2;
     const pick = cands.sort((a, b) => score(b) - score(a))[0];
-    if (!pick) senza++; else usati.add(pick.id);
-    giorni[d] = giorni[d] || {}; giorni[d][m] = {t: pick ? pick.nome : '', p: k};
+    if (!pick) senza++; else { usati.add(pick.id); nuoviPiatti.push(pick); }
+    giorni[d] = giorni[d] || {}; giorni[d][m] = {t: pick ? pick.nome : '', p: k, i: pick ? pick.id : ''};
   });
   await DB.put('menu', ws, {giorni});
-  toast(senza ? 'Menu proposto: per alcune proteine non ci sono piatti nel ricettario (importa i dati iniziali)' : 'Menu proposto. Modificalo come preferisci.');
+  const aggiunti = await spesaAdd(nuoviPiatti.flatMap(ingredientiLista));
+  toast(senza ? `Menu proposto e spesa aggiornata (${aggiunti} nuove voci); per alcune proteine mancano piatti` : `Menu proposto · ${aggiunti ? aggiunti + ' ingredienti aggiunti alla spesa' : 'spesa già aggiornata'}`);
 };
 
 /* ---- importazione dei dati iniziali ---- */
@@ -1379,7 +1403,7 @@ async function importaDati(file) {
     let n = 0, nuovi = 0;
     for (const np of d.piatti) {
       const old = byId.get(np.id) || byName.get(normName(np.nome)), id = old ? old.id : np.id;
-      await DB.put('piatti', id, {nome: np.nome, prot: (old && old.prot) || np.prot || '', ingredienti: np.ingredienti || (old && old.ingredienti) || '', fonte: np.fonte || (old && old.fonte) || '', stagione: np.stagione || '', tipo: np.tipo || 'ricetta', note: (old && old.note) || '', piace: old ? !!old.piace : false});
+      await DB.put('piatti', id, {nome: np.nome, prot: (old && old.prot) || np.prot || '', ingredienti: np.ingredienti || (old && old.ingredienti) || '', preparazione: np.preparazione || (old && old.preparazione) || '', fonte: np.fonte || (old && old.fonte) || '', stagione: np.stagione || (old && old.stagione) || '', tipo: np.tipo || (old && old.tipo) || 'ricetta', note: (old && old.note) || '', piace: old ? !!old.piace : false});
       n++; if (!old) nuovi++; if (n % 20 === 0) say(`Piatti: ${n}/${d.piatti.length}…`);
     }
     for (const r of d.riferimenti) await DB.put('riferimenti', r.id, r);
@@ -1412,15 +1436,15 @@ STACK E FILE
 - Regole di lavoro: a ogni modifica aumentare APP_VERSION, aggiungere una voce in NOTE_RILASCIO e aggiornare questo documento quando serve.
 
 SCHEDE
-Oggi (pasti del giorno, acqua e latte, sintomi) / Settimana (Frequenze, Menu con «Proponi un menu», Spesa con importazione liste) / Piatti (ricettario con ricerca e filtri, dettaglio piatto) / Salute (Allergeni, Sintomi) / Statistiche (29 schede cliccabili con drill-down) / Altro (Regole, Tappe, Guida v3 e fonti, Dispensa e congelatore, Frutta e verdura di stagione, Impostazioni, Novità, Importa dati iniziali, Documento, Guida).
+Oggi (pasti del giorno, acqua e latte, sintomi) / Settimana (Frequenze, Menu con spesa automatica e «Proponi un menu», Spesa con importazione liste) / Piatti (ricettario con ricerca, filtri e ricetta visibile direttamente nella lista) / Salute (Allergeni, Sintomi) / Statistiche (29 schede cliccabili con drill-down) / Altro (Regole, Tappe, Guida v3 e fonti, Dispensa e congelatore, Frutta e verdura di stagione, Impostazioni, Novità, Importa dati iniziali, Documento, Guida).
 
 DATI (collezioni Firestore)
 - pasti: data (AAAA-MM-GG), ora (HH:MM, facoltativa), momento (colazione, spuntino, pranzo, merenda, cena), alimenti (testo libero), comp (carbo, verdura, frutta), prot (carne, pesce, uova, legumi, formaggi), consistenza (liscia, schiacciata, pezzettini, solida), gradimento (no, ni, si), tavola (bool), note, autore.
 - sintomi: data, tipo (cacca_ok, cacca_dura, cacca_molle, rigurgito, vomito, pelle, altro), intensita (lieve, media, forte), note.
 - allergeni: id = chiave (latte, uova, pesce, crostacei, fruttasecca, arachidi, sesamo, grano); data introduzione, reazione (da_valutare, nessuna, lieve, importante), note. Esiste solo se introdotto.
-- menu: id = data del lunedì; giorni[0..6][pranzo|cena] = {t: piatto, p: fonte proteica}.
+- menu: id = data del lunedì; giorni[0..6][pranzo|cena] = {t: piatto, p: fonte proteica, i: id del piatto se riconosciuto}. Inserire un piatto del ricettario aggiunge automaticamente gli ingredienti alla spesa.
 - spesa: testo, fatto, ts.
-- piatti: nome, prot, ingredienti (voci separate da «; »), fonte (documento e pagina), stagione (autunno, inverno), tipo (ricetta, merenda, idea), piace, note. Gli id che iniziano con imp_ vengono dall'importazione.
+- piatti: nome, prot, ingredienti (voci separate da «; »), preparazione (facoltativa), fonte (documento e pagina), stagione, tipo (ricetta, merenda, idea), piace, note. Ingredienti e preparazione sono mostrati direttamente nella lista Piatti. Gli id che iniziano con imp_ vengono dall'importazione.
 - riferimenti: tipo dispensa, freezer, stagione (voci di frutta e verdura per autunno e inverno) e spesa (liste settimanali 1-4 di autunno e inverno), con sezioni[{titolo, voci}].
 - scorte: id = dispensa o freezer; ok = elenco delle voci già in casa.
 - giorni: id = data; acqua (ml), latte (numero di poppate o biberon).
@@ -1440,6 +1464,12 @@ Gli alimenti sono letti dal testo dei pasti (separati da virgole, «e», «con»
 PREFERENZE DI CHI USA L'APP
 Italiano, da telefono, budget zero (strumenti gratuiti), procedure passo passo senza competenze di sviluppo, avvisi non bloccanti, stile chiaro e rassicurante, statistiche cliccabili.
 
+VERSIONE 4 - RICETTE E SPESA AUTOMATICA
+- La lista Piatti mostra direttamente ingredienti, preparazione disponibile, note e fonte; la scheda separata resta per pianificare o modificare.
+- Il menu collega il piatto tramite id quando possibile e aggiunge subito gli ingredienti alla spesa, con deduplica.
+- La stessa automazione copre inserimento manuale, Pianifica, Proponi un menu e copia della settimana precedente.
+- Il JSON privato resta sintetico: non incorpora integralmente testi protetti; il campo preparazione può essere completato nell’app.
+
 VERSIONE 3 - DOCUMENTAZIONE E CRITERI
 - Audit della cartella Materiale Svezzamento: 91 elementi (36 PDF, 53 immagini, 1 ODT, 1 ZIP) più i 5 PDF iniziali.
 - Nuova area Guida v3 e fonti con criteri di avvio, sicurezza a tavola, tagli per oltre 30 alimenti, fonti per ambito e 12 conflitti espliciti.
@@ -1452,6 +1482,7 @@ ${storia}
 
 PUNTI APERTI
 - Nome del bimbo da inserire in Altro > Impostazioni.
+- Completare facoltativamente il campo Preparazione per le idee importate che hanno solo ingredienti sintetici.
 - Promemoria per gli allergeni in osservazione non ancora previsti.
 - Verificare periodicamente con il pediatra le regole familiari e le indicazioni più prudenziali.
 - Aggiornare le fonti se vengono aggiunti nuovi documenti alla cartella.
@@ -1492,15 +1523,15 @@ function vAltro() {
       return back + `<h1>Frutta e verdura di stagione</h1><div class="muted">Ora è ${cur}. I documenti riportano solo autunno e inverno.</div>` + (l.length ? l.map(r => `<div class="card" ${r.stagione === cur ? 'style="border-color:var(--green);border-width:2px"' : ''}><h3>${r.stagione === cur ? '📍 ' : ''}${esc(r.titolo)}</h3><div class="chips">${r.sezioni.flatMap(s => s.voci).map(v => `<span class="tag">${esc(v)}</span>`).join('')}</div></div>`).join('') : `<div class="card muted" style="margin-top:10px">Elenchi non ancora importati: vai in Altro › Importa dati iniziali.</div>`);
     }
     case 'import':
-      return back + `<h1>Importa dati iniziali</h1><div class="card"><div>Carica il file <b>dati-iniziali.json</b> (lo trovi nello zip): contiene il ricettario (oltre 120 idee con ingredienti e pagina del documento), le liste della spesa settimanali, la dispensa, il congelatore e la frutta/verdura di stagione.</div>
-        <div class="muted small" style="margin-top:8px">I dati finiscono nel tuo database privato. Puoi ripetere l'importazione quando vuoi: non crea doppioni e conserva le stelline e le note.</div>
+      return back + `<h1>Importa dati iniziali</h1><div class="card"><div>Carica il file <b>dati-iniziali.json</b> (lo trovi nello zip): contiene 175 idee con ingredienti sintetici e fonte, le liste della spesa settimanali, la dispensa, il congelatore e la frutta/verdura di stagione.</div>
+        <div class="muted small" style="margin-top:8px">I dati finiscono nel tuo database privato. Puoi ripetere l'importazione quando vuoi: non crea doppioni e conserva stelline, note e preparazioni aggiunte da voi.</div>
         <input type="file" id="fileImp" accept=".json,application/json" style="margin-top:12px"><div id="impStatus" class="info" style="margin-top:10px">${esc(ui.impMsg || 'Scegli il file per iniziare.')}</div></div>
         <div class="muted small">Piatti ora nel ricettario: ${S.piatti.length}.</div>`;
     case 'guida':
       return back + `<h1>Guida all'app</h1>` + [
         ['Oggi', 'Registra i pasti con «+ Pasto» (anche l\'ora). Mentre scrivi gli alimenti ti avvisa se c\'è qualcosa da evitare o un allergene nuovo. Sotto trovi acqua e latte con i tasti rapidi.'],
-        ['Settimana', 'Frequenze: contatori. Menu: scrivi i piatti o tocca «Proponi un menu». Spesa: lista da spuntare, importa una lista settimanale, aggiungi gli ingredienti del menu o quelli che mancano in dispensa.'],
-        ['Piatti', 'Il ricettario: cerca, filtra per proteina o stagione, apri un piatto per vedere gli ingredienti, metterli nella spesa, pianificarlo o segnarlo come mangiato.'],
+        ['Settimana', 'Frequenze: contatori. Menu: scegli un piatto del ricettario o tocca «Proponi un menu»; gli ingredienti entrano automaticamente nella Spesa. Spesa: lista da spuntare, liste settimanali e scorte mancanti.'],
+        ['Piatti', 'Il ricettario mostra ingredienti, preparazione disponibile, note e fonte direttamente nella lista. Cerca o filtra; usa «Apri / pianifica» per metterlo nel menu, modificarlo o segnarlo come mangiato.'],
         ['Salute', 'Allergeni: segna quando introduci ciascuno e l\'esito. Sintomi: cacca, rigurgito, pelle e altro.'],
         ['Statistiche', 'Tocca una scheda, poi un grafico o una riga per vedere i pasti dietro al numero. In alto scegli il periodo. Per i pasti toccati si può anche correggere il dato.'],
         ['Aggiornamenti', 'Dopo un aggiornamento chiudi del tutto l\'app e riaprila. Il numero di versione è in fondo a questa pagina Altro.']
