@@ -101,10 +101,10 @@ nav button{font-size:10px}nav button span{font-size:19px}
 <script src="config.js"></script>
 <script type="module">
 /* ============================================================
-   SVEZZAMENTO - webapp personale (versione 1)
+   SVEZZAMENTO - webapp personale (versione 3)
    Dati: Firebase (Authentication + Firestore). Senza config: modalità prova locale.
    ============================================================ */
-const APP_VERSION = 2;
+const APP_VERSION = 3;
 const NOTE_RILASCIO = [
   {v:1, titolo:'Prima versione', punti:[
     'Oggi: diario dei pasti con avvisi (cibi da evitare, allergeni nuovi, più fonti proteiche nello stesso pasto).',
@@ -166,7 +166,7 @@ const ALL_KW = {
 };
 const ALL_ESCLUDI = /latte di (cocco|mandorl\w*|avena|riso|soia)|burro di (arachidi|mandorl\w*)|farina di (ceci|mais|riso|castagne|mandorl\w*|grano saraceno)|pasta di (legumi|ceci|lenticchie|riso|mais)|(cous cous|couscous) di legumi|grano saraceno/g;
 const EVITA = [
-  {kw:['miele'], msg:'Miele: crudo no (rischio botulino).'},
+  {kw:['miele'], maxMesi:12, msg:'Miele: per prudenza evitare tutto il miele prima dei 12 mesi (gli appunti citano il miele crudo; le guide istituzionali sono più restrittive).'},
   {kw:['zucchero','zuccher'], msg:'Zucchero: zero zuccheri aggiunti.'},
   {kw:['succo di frutta','succhi'], msg:'Succhi di frutta: meglio la frutta.'},
   {kw:['biscott','plasmon','merendin'], msg:'Biscottini, Plasmon e prodotti per l\'infanzia: da evitare.'},
@@ -1158,6 +1158,79 @@ NOTE_RILASCIO.push({v: 2, titolo: 'Statistiche, ricettario e spesa', punti: [
   'Regole: aggiunte «Merende» e «Dove i documenti non coincidono».'
 ]});
 
+
+
+/* ============================================================
+   VERSIONE 3: documentazione estesa, sicurezza e conflitti
+   ============================================================ */
+NOTE_RILASCIO.push({v: 3, titolo: 'Documentazione completa, sicurezza e fonti', punti: [
+  'Integrata la cartella Materiale Svezzamento: 91 elementi catalogati (36 PDF, 53 immagini, 1 ODT e 1 ZIP), oltre ai 5 documenti già usati nella v2.',
+  'Nuova area Guida v3 e fonti: avvio, alimentazione responsiva, tagli sicuri, latte, organizzazione, qualità delle fonti e inventario.',
+  'Nuova guida pratica ai tagli sicuri per oltre 30 alimenti, divisa per forma e consistenza.',
+  'Conflitti ampliati: quantità, frequenze, allergeni, miele, integrale, oli, frutti di mare, crudi, dolci, salumi e doppie proteine.',
+  'Ricettario e liste stagionali ricostruiti nel nuovo dati-iniziali.json; le statistiche restano tutte cliccabili con dettaglio.',
+  'Documento per l’assistente aggiornato alla versione 3.'
+]});
+
+const V3_CONFLITTI = [
+ ['Quantità e grammature','Gli appunti dicono di non usare tabelle perché ogni bambino ha bisogni diversi; alcuni documenti propongono grammi e porzioni.','Nessuna grammatura è usata come obiettivo nell’app.'],
+ ['Carne','Appunti: 2 volte/settimana. Ricettario: 2-3. Documento “Quantità”: 3-4.','Obiettivo iniziale: 2.'],
+ ['Uova','Appunti: 2 volte/settimana. Ricettario e “Quantità”: 1-2.','Obiettivo iniziale: 2.'],
+ ['Allergeni','Appunti: uno alla volta. “Alcune curiosità” dice che non è necessario salvo allergia accertata.','Il tracker mantiene l’introduzione uno alla volta.'],
+ ['Miele','Appunti: no miele crudo. Guide istituzionali: niente miele nel primo anno.','Avviso prudenziale: evitare tutto il miele prima dei 12 mesi; confrontarsi col pediatra.'],
+ ['Cereali integrali','Appunti e Baby merende: evitare prima dell’anno. Alcuni menu famiglia includono prodotti integrali.','L’app avvisa sotto i 12 mesi.'],
+ ['Oli','Appunti: sconsigliati oli vegetali diversi dall’EVO e margarina. Alcune ricette usano olio di semi.','Le ricette sono marcate da adattare; preferire EVO secondo le regole familiari.'],
+ ['Frutti di mare','Appunti: evitare perché gommosi. L’Atlante ammette crostacei ben cotti/tagliati e molluschi solo sminuzzati.','L’app mantiene l’avviso di evitare.'],
+ ['Verdure crude','Appunti: iniziare con verdure cotte. Alcune fonti consentono crudi preparati in sicurezza e sorvegliati.','All’inizio l’app propone cotto; la guida tagli distingue le eccezioni.'],
+ ['Dolci e snack','Appunti: zero zuccheri aggiunti fino a 2 anni. Menu famiglia e ricettari includono miele, biscotti, marmellata e torte.','Esclusi dalle proposte automatiche per il bambino o segnalati come “famiglia/adulti”.'],
+ ['Sale, salumi e prodotti conservati','Appunti: sale moderato; evitare cracker salati. Alcuni menu includono salumi, baccalà, olive e formaggi sapidi.','Le proposte automatiche li escludono o li segnalano.'],
+ ['Doppie fonti proteiche','Appunti: evitare combinazioni come carne + parmigiano. Alcune ricette uniscono pesce/formaggio, legumi/latticini o carne/uovo.','Resta l’avviso non bloccante e il menu automatico usa una fonte principale.']
+];
+const V3_TAGLI = [
+ ['Uva, pomodorini, olive, ciliegie','Mai interi o a rondelle: togli semi/nocciolo e taglia longitudinalmente in 4 o più spicchi sottili.'],
+ ['Mirtilli, ribes, more, lamponi','Schiaccia oppure taglia longitudinalmente in piccoli pezzi.'],
+ ['Frutta a guscio e semi','Mai interi: polvere finissima o crema 100% resa fluida e spalmata in strato sottile, non una cucchiaiata densa.'],
+ ['Mela','Cruda solo grattugiata finemente; altrimenti cotta e morbida.'],
+ ['Pera, pesca, albicocca, prugna, kiwi','Molto maturi e morbidi; togli parti dure/nocciolo e offri fettine sottili o pezzi adeguati alla presa.'],
+ ['Banana e avocado','Morbidi: bastoncini/listarelle o schiacciati; non rondelle di banana.'],
+ ['Agrumi','Togli buccia, semi e pellicine fibrose; offri polpa a pezzetti o spicchi puliti.'],
+ ['Carota','Cruda solo grattugiata; cotta fino a essere schiacciabile e tagliata a bastoncini, mai rondelle.'],
+ ['Zucchina, zucca, patata, broccolo, cavolfiore','Ben cotti e schiacciabili; bastoncini/ciuffi per presa palmare o cubetti morbidi quando compare la presa a pinza.'],
+ ['Finocchio, sedano, verdure fibrose','Preferire cotti; eliminare filamenti e nervature, poi sminuzzare.'],
+ ['Legumi tondi','Ceci, fagioli, fave e piselli: ben cotti, decorticati quando necessario e schiacciati; non interi.'],
+ ['Lenticchie','Ben cotte; preferire decorticate o passate all’inizio.'],
+ ['Pasta lunga e fusilli','Ben cotti. Spaghetti/tagliatelle e fusilli sono facili da afferrare; adattare sempre alla capacità del bambino.'],
+ ['Penne, rigatoni, maccheroni','Ben cotti e tagliati longitudinalmente per ridurre scivolosità e facilitarne la presa.'],
+ ['Gnocchi','La consistenza collosa e la forma tonda aumentano il rischio: taglia sottili e allungati.'],
+ ['Riso, cous cous, miglio, quinoa','Cuocere fino a consistenza morbida; aiutare col cucchiaino o lasciare esplorare.'],
+ ['Pane','Morbido e friabile, non gommoso; tostatura leggera e strisce. Evitare bocconi compatti/appiccicosi.'],
+ ['Mozzarella e formaggi gommosi','Striscioline molto sottili o piccoli pezzi; attenzione alla mozzarella calda e filante.'],
+ ['Carne','Fibrosa: ragù, sminuzzata finemente o polpette morbide adeguatamente tagliate; non listarelle dure.'],
+ ['Pesce','Ben cotto, controllato con cura per le lische, morbido e sminuzzato/striscioline.'],
+ ['Uovo','Ben cotto: sodo a fettine, strapazzato sminuzzato o frittata morbida a strisce.'],
+ ['Creme dense','Hummus, tahina e creme di frutta secca: diluire o spalmare sottilmente, mai a cucchiaiate dense.'],
+ ['Würstel e salumi','Non adatti alle regole familiari. Il taglio a rondella è particolarmente pericoloso; se presenti, longitudinalmente in almeno 4 parti e poi piccoli pezzi.']
+];
+const V3_FONTI = [
+ ['Riferimento familiare','Appunti della moglie','Regole operative prioritarie nell’app.'],
+ ['Sicurezza','Atlante Tagli Sicuri; La sicurezza a tavola; Prevenire il soffocamento in età pediatrica','Usati per postura, sorveglianza, consistenze e tagli.'],
+ ['Consensus e indirizzi','Consensus alimentazione complementare 6-24 mesi; Position paper ACP; Pappa al nido; W la pappa; Libretto Svezzamento','Usati come contesto tecnico; le differenze sono esposte, non fuse.'],
+ ['Menu e organizzazione','Guida UPPA menu settimanali; menu famiglia autunno/inverno; immagini di menu; vademecum antispreco','Usati per idee stagionali, pianificazione, dispensa e freezer.'],
+ ['Ricette','Ricettario; Minestriamo; Baby merende; Il pappatutto; ricette e fotografie nella cartella','Nell’app solo titoli, ingredienti sintetici, fonte e pagina: non si riproducono i testi completi.'],
+ ['Materiale di contesto','Allattamento, latte di formula/vaccino, gusto, sana alimentazione, spesa, COVID e documenti per adulti','Catalogato; entra nelle regole solo se pertinente allo svezzamento.'],
+ ['Da non trasformare in regola','Affermazioni isolate, datate o non coerenti con consensus e documenti istituzionali','Restano visibili come materiale sorgente ma non generano avvisi o obiettivi.']
+];
+function vFontiV3(back) {
+ const details = (arr, ico) => arr.map(x => `<details class="card"><summary><b>${ico} ${esc(x[0])}</b></summary><div style="margin-top:9px">${esc(x[1])}</div>${x[2] ? `<div class="muted small" style="margin-top:7px"><b>Scelta nell’app:</b> ${esc(x[2])}</div>` : ''}</details>`).join('');
+ return back + `<h1>Guida v3 e fonti</h1><div class="info"><b>Regola di lettura:</b> valgono prima gli appunti della famiglia. Le indicazioni di sicurezza più prudenziali sono evidenziate. Questa area non sostituisce pediatra o corso di disostruzione.</div>
+ <div class="card"><h3>📚 Cosa è stato integrato</h3><div><b>91 elementi</b> della cartella: 36 PDF, 53 immagini, 1 ODT e 1 ZIP, oltre ai 5 PDF già usati nella v2.</div><div class="muted small" style="margin-top:7px">I materiali non pertinenti al bambino sono catalogati ma non trasformati in regole. I PDF con clausole di non diffusione non vengono pubblicati né copiati nell’app.</div></div>
+ <h2>Prima di iniziare</h2><div class="card"><ul class="pts"><li>In genere intorno ai 6 mesi: testa stabile, seduta con minimo appoggio, coordinazione occhi-mano-bocca, deglutizione e interesse per il cibo.</li><li>Il latte resta importante; all’inizio bastano assaggi e anche un solo pasto.</li><li>Bambino seduto con schiena dritta, adulto sempre presente, niente TV/gioco/auto e niente cibo mentre ride o piange.</li><li>Non forzare. I genitori decidono cosa, quando e dove; il bambino decide se e quanto.</li><li>È raccomandabile che chi lo accudisce impari le manovre di disostruzione in un corso pratico.</li></ul></div>
+ <h2>Tagli e consistenze</h2>${details(V3_TAGLI,'🔪')}
+ <h2>Dove le fonti non coincidono</h2>${details(V3_CONFLITTI,'⚖️')}
+ <h2>Fonti e qualità</h2>${details(V3_FONTI,'📄')}
+ <h2>Organizzazione antispreco</h2><div class="card"><ul class="pts"><li>Controlla dispensa e freezer prima della spesa; pianifica i pasti e compra ciò che serve.</li><li>“Primo entrato, primo usato”; controlla scadenza e termine minimo di conservazione.</li><li>Etichetta freezer e avanzi con contenuto e data; congela porzioni utili per i giorni di fretta.</li><li>Riutilizza in sicurezza gli avanzi e usa ingredienti stagionali, semplici e vari.</li></ul></div>`;
+}
+
 /* ---- acqua e latte ---- */
 function cardAcqua(d) {
   const g = S.giorni.find(x => x.id === d) || {}, m = eta(imp().nascita, parse(d)).m, t = m >= 12 ? 1200 : m >= 6 ? 800 : 0, a = g.acqua || 0;
@@ -1320,6 +1393,7 @@ document.addEventListener('input', e => { if (e.target.dataset && e.target.datas
 REGOLE.splice(1, 0, ['Merende', ['Mattina: piccolo spuntino, basta frutta fresca, cotta o in purea.', 'Pomeriggio: si combinano i «fantastici 6»: frutta fresca, crema di frutta secca 100%, yogurt bianco intero (o vegetale senza zuccheri), cereali soffiati, avena in fiocchi, latte vaccino o bevande vegetali (il latte vaccino come alimento solo dai 12 mesi).', 'La frutta secca è molto calorica: usala nello spuntino del pomeriggio, alternandola con altri alimenti.', 'Frutta fresca o cotta va bene anche a fine pasto.', 'Niente biscottini e prodotti per l\'infanzia (appunti).']]);
 REGOLE.push(['Dove i documenti non coincidono', ['Carne: gli appunti dicono 2 volte a settimana, il Ricettario 2-3. Uova: 2 volte negli appunti, 1-2 nel Ricettario. L\'app usa gli appunti; puoi cambiare gli obiettivi in Altro › Impostazioni.', '«Biscotti alla banana» (Baby merende) contiene olio di semi: gli appunti sconsigliano gli oli vegetali.', 'Alcune ricette dei menù usano cacao amaro, vino bianco, sale o pepe: confrontale con gli appunti e col pediatra prima di prepararle.', 'Nei menù famiglia ci sono anche tabelle di grammature: non sono nell\'app, perché gli appunti preferiscono non usare quantità di riferimento.']]);
 REGOLE[0][1].push('Ripartizione delle responsabilità (Ricettario): i genitori scelgono cosa, quando e dove si mangia; il bambino decide quanto e se.');
+REGOLE.push(['Guida v3', ['In Altro › Guida v3 e fonti trovi tagli sicuri, criteri di avvio, inventario delle fonti e tutti i conflitti rilevati.', 'Per prudenza la v3 segnala di evitare tutto il miele prima dei 12 mesi, anche se gli appunti citano solo il miele crudo.', 'Le affermazioni isolate o datate non coerenti con documenti di consenso non diventano regole operative.']]);
 
 /* ---- documento per l'assistente ---- */
 function docAssistente() {
@@ -1338,7 +1412,7 @@ STACK E FILE
 - Regole di lavoro: a ogni modifica aumentare APP_VERSION, aggiungere una voce in NOTE_RILASCIO e aggiornare questo documento quando serve.
 
 SCHEDE
-Oggi (pasti del giorno, acqua e latte, sintomi) / Settimana (Frequenze, Menu con «Proponi un menu», Spesa con importazione liste) / Piatti (ricettario con ricerca e filtri, dettaglio piatto) / Salute (Allergeni, Sintomi) / Statistiche (29 schede cliccabili con drill-down) / Altro (Regole, Tappe, Dispensa e congelatore, Frutta e verdura di stagione, Impostazioni, Novità, Importa dati iniziali, Documento, Guida).
+Oggi (pasti del giorno, acqua e latte, sintomi) / Settimana (Frequenze, Menu con «Proponi un menu», Spesa con importazione liste) / Piatti (ricettario con ricerca e filtri, dettaglio piatto) / Salute (Allergeni, Sintomi) / Statistiche (29 schede cliccabili con drill-down) / Altro (Regole, Tappe, Guida v3 e fonti, Dispensa e congelatore, Frutta e verdura di stagione, Impostazioni, Novità, Importa dati iniziali, Documento, Guida).
 
 DATI (collezioni Firestore)
 - pasti: data (AAAA-MM-GG), ora (HH:MM, facoltativa), momento (colazione, spuntino, pranzo, merenda, cena), alimenti (testo libero), comp (carbo, verdura, frutta), prot (carne, pesce, uova, legumi, formaggi), consistenza (liscia, schiacciata, pezzettini, solida), gradimento (no, ni, si), tavola (bool), note, autore.
@@ -1366,14 +1440,21 @@ Gli alimenti sono letti dal testo dei pasti (separati da virgole, «e», «con»
 PREFERENZE DI CHI USA L'APP
 Italiano, da telefono, budget zero (strumenti gratuiti), procedure passo passo senza competenze di sviluppo, avvisi non bloccanti, stile chiaro e rassicurante, statistiche cliccabili.
 
+VERSIONE 3 - DOCUMENTAZIONE E CRITERI
+- Audit della cartella Materiale Svezzamento: 91 elementi (36 PDF, 53 immagini, 1 ODT, 1 ZIP) più i 5 PDF iniziali.
+- Nuova area Guida v3 e fonti con criteri di avvio, sicurezza a tavola, tagli per oltre 30 alimenti, fonti per ambito e 12 conflitti espliciti.
+- Restano prioritarie le regole degli appunti. Per il miele si mostra anche l'avvertenza prudenziale dei documenti istituzionali: niente miele nel primo anno.
+- I testi completi dei PDF non vengono incorporati o pubblicati; dati-iniziali.json contiene solo metadati sintetici per uso privato.
+- Statistiche v2 mantenute cliccabili e con drill-down.
+
 STORIA DELLE VERSIONI
 ${storia}
 
 PUNTI APERTI
 - Nome del bimbo da inserire in Altro > Impostazioni.
 - Promemoria per gli allergeni in osservazione non ancora previsti.
-- Liste di stagione di primavera ed estate non presenti nei documenti.
-- Il ricettario «Baby merende» è importato solo per le ricette lette dal PDF (24 su 40).
+- Verificare periodicamente con il pediatra le regole familiari e le indicazioni più prudenziali.
+- Aggiornare le fonti se vengono aggiunti nuovi documenti alla cartella.
 `;
 }
 
@@ -1381,6 +1462,8 @@ function vAltro() {
   const back = `<button class="ghost small" data-a="altro" data-v="">‹ Indietro</button>`;
   const {nome, nascita} = imp(), F2 = getFreq();
   switch (ui.altro) {
+    case 'fonti':
+      return vFontiV3(back);
     case 'regole':
       return back + `<h1>Regole e promemoria</h1><div class="muted">Dagli appunti di tua moglie e dai documenti. Sono promemoria delle vostre regole e non sostituiscono il pediatra.</div>` + REGOLE.map(([t, p]) => `<div class="card"><h3>${t}</h3><ul class="pts">${p.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`).join('');
     case 'tappe': {
@@ -1409,7 +1492,7 @@ function vAltro() {
       return back + `<h1>Frutta e verdura di stagione</h1><div class="muted">Ora è ${cur}. I documenti riportano solo autunno e inverno.</div>` + (l.length ? l.map(r => `<div class="card" ${r.stagione === cur ? 'style="border-color:var(--green);border-width:2px"' : ''}><h3>${r.stagione === cur ? '📍 ' : ''}${esc(r.titolo)}</h3><div class="chips">${r.sezioni.flatMap(s => s.voci).map(v => `<span class="tag">${esc(v)}</span>`).join('')}</div></div>`).join('') : `<div class="card muted" style="margin-top:10px">Elenchi non ancora importati: vai in Altro › Importa dati iniziali.</div>`);
     }
     case 'import':
-      return back + `<h1>Importa dati iniziali</h1><div class="card"><div>Carica il file <b>dati-iniziali.json</b> (lo trovi nello zip): contiene il ricettario (circa ${'170'} idee con ingredienti e pagina del documento), le liste della spesa settimanali, la dispensa, il congelatore e la frutta/verdura di stagione.</div>
+      return back + `<h1>Importa dati iniziali</h1><div class="card"><div>Carica il file <b>dati-iniziali.json</b> (lo trovi nello zip): contiene il ricettario (oltre 120 idee con ingredienti e pagina del documento), le liste della spesa settimanali, la dispensa, il congelatore e la frutta/verdura di stagione.</div>
         <div class="muted small" style="margin-top:8px">I dati finiscono nel tuo database privato. Puoi ripetere l'importazione quando vuoi: non crea doppioni e conserva le stelline e le note.</div>
         <input type="file" id="fileImp" accept=".json,application/json" style="margin-top:12px"><div id="impStatus" class="info" style="margin-top:10px">${esc(ui.impMsg || 'Scegli il file per iniziare.')}</div></div>
         <div class="muted small">Piatti ora nel ricettario: ${S.piatti.length}.</div>`;
@@ -1423,7 +1506,7 @@ function vAltro() {
         ['Aggiornamenti', 'Dopo un aggiornamento chiudi del tutto l\'app e riaprila. Il numero di versione è in fondo a questa pagina Altro.']
       ].map(([t, x]) => `<div class="card"><h3>${t}</h3><div>${esc(x)}</div></div>`).join('');
     default:
-      return `<h1>Altro</h1>` + [['regole', '📋', 'Regole e promemoria'], ['tappe', '🌱', 'Tappe per età'], ['scorte', '🧊', 'Dispensa e congelatore'], ['stagione', '🍂', 'Frutta e verdura di stagione'], ['impostazioni', '👶', 'Impostazioni'], ['import', '📥', 'Importa dati iniziali'], ['novita', '🆕', 'Novità e versioni'], ['doc', '🤖', 'Documento per l\'assistente'], ['guida', '❓', 'Guida all\'app']].map(([k, i, l]) => `<div class="card tap" data-a="altro" data-v="${k}"><div class="row"><span class="big">${i}</span><b class="grow">${l}</b><span class="muted">›</span></div></div>`).join('') +
+      return `<h1>Altro</h1>` + [['regole', '📋', 'Regole e promemoria'], ['fonti', '📚', 'Guida v3 e fonti'], ['tappe', '🌱', 'Tappe per età'], ['scorte', '🧊', 'Dispensa e congelatore'], ['stagione', '🍂', 'Frutta e verdura di stagione'], ['impostazioni', '👶', 'Impostazioni'], ['import', '📥', 'Importa dati iniziali'], ['novita', '🆕', 'Novità e versioni'], ['doc', '🤖', 'Documento per l\'assistente'], ['guida', '❓', 'Guida all\'app']].map(([k, i, l]) => `<div class="card tap" data-a="altro" data-v="${k}"><div class="row"><span class="big">${i}</span><b class="grow">${l}</b><span class="muted">›</span></div></div>`).join('') +
         (demo ? `<div class="card tap" data-a="demoDati"><div class="row"><span class="big">🧪</span><b class="grow">Carica dati di esempio (solo prova)</b></div></div><button class="ghost block" data-a="demoPulisci">Cancella i dati di prova</button>` : '') +
         (DB.logout ? `<button class="ghost block" data-a="logout">Esci (${esc((DB.user && DB.user.email) || '')})</button>` : '') +
         `<div class="muted small" style="text-align:center;margin-top:14px">Versione ${APP_VERSION}${demo ? ' · modalità prova' : ''}</div>`;
