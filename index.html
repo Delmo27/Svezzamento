@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#5b8f6b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Svezzamento</title>
+<style>
+:root{--bg:#faf6f0;--card:#fff;--ink:#2d2a26;--soft:#7a736b;--line:#ece4d8;--green:#5b8f6b;--greenbg:#e6f1ea;--peach:#e8a87c;--peachbg:#fdeee2;--red:#c0564b;--redbg:#fbe9e6;--amber:#b7862b;--amberbg:#fbf1d9;--blue:#4f7ca8;--bluebg:#e5eef7}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.4}
+#app{max-width:560px;margin:0 auto;padding:14px 14px 96px}
+h1{font-size:22px;margin:4px 0 2px}h2{font-size:17px;margin:18px 0 8px}h3{font-size:15px;margin:0 0 4px}
+.muted{color:var(--soft);font-size:14px}.small{font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:10px 0}
+.card.tap{cursor:pointer}
+.row{display:flex;align-items:center;gap:8px}.between{justify-content:space-between}.wrap{flex-wrap:wrap}
+.grow{flex:1}
+button{font:inherit;border:0;border-radius:12px;padding:10px 14px;background:var(--green);color:#fff;font-weight:600}
+button.ghost{background:transparent;color:var(--green);border:1px solid var(--green)}
+button.soft{background:var(--greenbg);color:var(--green)}
+button.danger{background:var(--redbg);color:var(--red)}
+button.small{padding:6px 10px;font-size:13px;border-radius:10px}
+button.block{width:100%}
+input,select,textarea{font:inherit;width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+textarea{min-height:70px;resize:vertical}
+label.f{display:block;font-size:13px;color:var(--soft);margin:12px 0 4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:500}
+.chip.on{background:var(--green);color:#fff;border-color:var(--green)}
+.tag{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;background:var(--greenbg);color:var(--green);margin:2px 4px 2px 0}
+.tag.peach{background:var(--peachbg);color:#b5683a}.tag.red{background:var(--redbg);color:var(--red)}.tag.amber{background:var(--amberbg);color:var(--amber)}.tag.blue{background:var(--bluebg);color:var(--blue)}.tag.gray{background:#f0ece6;color:var(--soft)}
+.warn{background:var(--amberbg);color:#7a5a14;border-radius:12px;padding:9px 12px;margin:8px 0;font-size:14px}
+.warn.red{background:var(--redbg);color:#8d3a31}.info{background:var(--bluebg);color:#35597d;border-radius:12px;padding:9px 12px;margin:8px 0;font-size:14px}
+.seg{display:flex;background:#efe8dd;border-radius:12px;padding:3px;margin:10px 0}
+.seg button{flex:1;background:transparent;color:var(--soft);padding:8px 6px;font-size:14px}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav button{flex:1;background:transparent;color:var(--soft);border-radius:0;padding:9px 2px 8px;font-size:11px;font-weight:600}
+nav button span{display:block;font-size:20px;line-height:1.1}
+nav button.on{color:var(--green)}
+.sheet{position:fixed;inset:0;z-index:10;display:flex;align-items:flex-end;justify-content:center}.sheet.hidden{display:none}
+.sheet-bg{position:absolute;inset:0;background:rgba(40,30,20,.45)}
+.sheet-body{position:relative;background:var(--bg);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(24px + env(safe-area-inset-bottom))}
+.dots{letter-spacing:2px;color:var(--green);font-size:15px}
+.bar{height:8px;border-radius:6px;background:#efe8dd;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--green)}
+.big{font-size:26px}
+.check{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.check input{width:22px;height:22px;flex:none}.check.done span{text-decoration:line-through;color:var(--soft)}
+.chk{display:flex;gap:10px;align-items:flex-start;margin:8px 0;font-size:14px}.chk input{width:20px;height:20px;flex:none;margin-top:2px}
+.dayhead{display:flex;justify-content:space-between;align-items:center;margin:6px 0}
+.mrow{display:flex;gap:6px;margin:6px 0}.mrow input{flex:1}.mrow select{width:110px;flex:none;padding:10px 6px}
+ul.pts{margin:6px 0 0;padding-left:20px}ul.pts li{margin:3px 0}
+.banner{background:var(--peachbg);color:#8a4d23;border-radius:12px;padding:8px 12px;font-size:13px;margin-bottom:8px}
+.login{margin-top:15vh}
+.pre{white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;max-height:50vh;overflow:auto}
+
+.kv{font-size:24px;font-weight:700;color:var(--ink);line-height:1.2}
+.kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.kbox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center}
+.kbox .kv{font-size:20px}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sgrid .sc{margin:0;padding:10px 12px}
+.sgrid .sc .small{font-size:12px}
+.spark{display:block;margin-top:4px}
+.tapc{cursor:pointer}
+.brow{display:flex;align-items:center;gap:8px;margin:7px 0;padding:3px 4px;border-radius:10px}
+.brow.sel,.col.sel{background:var(--greenbg)}
+.brow .bl{width:38%;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bt{flex:1;height:12px;border-radius:7px;background:#efe8dd;overflow:hidden}
+.bt i{display:block;height:100%;background:var(--green);border-radius:7px}
+.brow b{min-width:44px;text-align:right;font-size:13px}
+.cols{display:flex;align-items:flex-end;gap:4px;overflow-x:auto;padding:4px 0 2px}
+.col{flex:1;min-width:34px;display:flex;flex-direction:column;align-items:center;border-radius:10px;padding:2px 1px}
+.cb{width:100%;height:84px;display:flex;align-items:flex-end;justify-content:center}
+.cb i{display:block;width:70%;background:var(--green);border-radius:6px 6px 2px 2px}
+.cv{font-size:11px;margin-bottom:2px}.cl{font-size:10px;color:var(--soft);margin-top:3px;white-space:nowrap}
+.heat{margin:10px 0}.hh,.hr{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
+.hh span{text-align:center;font-size:11px;color:var(--soft)}
+.hc{padding:0;height:34px;border-radius:9px;background:#efe8dd;color:var(--soft);font-size:12px;font-weight:600}
+.hc.h1{background:#cfe4d6;color:#2d5a3a}.hc.h2{background:#9fcbae;color:#1f4a2c}.hc.h3{background:#6fae85;color:#fff}.hc.h4{background:#3f8a5c;color:#fff}.hc.dim{opacity:.35}
+.tbl{width:100%;border-collapse:collapse;font-size:14px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tbl th,.tbl td{padding:7px 8px;text-align:left;border-bottom:1px solid var(--line)}.tbl th{font-size:12px;color:var(--soft)}
+.tbl .up{color:var(--green);font-weight:600}.tbl .dn{color:var(--red);font-weight:600}
+.tblw{overflow-x:auto}.tbl.mini th,.tbl.mini td{padding:4px 3px;text-align:center;font-size:12px}
+.cell{padding:4px 0;width:34px;border-radius:8px;font-size:13px;font-weight:700;background:#efe8dd;color:var(--ink)}
+.cell.okc{background:#cfe4d6;color:#2d5a3a}.cell.under{background:var(--amberbg);color:#8a6410}.cell.over{background:var(--redbg);color:var(--red)}.cell.wip{background:var(--bluebg);color:#35597d}
+.drill{border:2px solid var(--green);border-radius:16px;padding:10px 12px;margin:14px 0;background:#fcfffc}
+.drill .card{margin:8px 0}
+.toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:#2d2a26;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:30;max-width:86vw;text-align:center}
+nav button{font-size:10px}nav button span{font-size:19px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<nav id="nav" style="display:none"></nav>
+<div id="sheet" class="sheet hidden"><div class="sheet-bg" data-a="chiudi"></div><div class="sheet-body" id="sheetBody"></div></div>
+
+<script src="config.js"></script>
+<script type="module">
+/* ============================================================
+   SVEZZAMENTO - webapp personale (versione 1)
+   Dati: Firebase (Authentication + Firestore). Senza config: modalità prova locale.
+   ============================================================ */
+const APP_VERSION = 2;
+const NOTE_RILASCIO = [
+  {v:1, titolo:'Prima versione', punti:[
+    'Oggi: diario dei pasti con avvisi (cibi da evitare, allergeni nuovi, più fonti proteiche nello stesso pasto).',
+    'Settimana: contatori delle frequenze (carne, pesce, uova, legumi, formaggi), menu settimanale e lista della spesa.',
+    'Piatti: ricettario personale con idee di partenza (solo titoli) e piatti preferiti.',
+    'Salute: tracker degli allergeni introdotti uno alla volta e diario dei sintomi.',
+    'Altro: regole e tappe per età dagli appunti, impostazioni, novità, documento per l\'assistente.'
+  ]}
+];
+
+const cfg = window.APP_CONFIG || {};
+const fb = cfg.firebase || {};
+const demo = !fb.apiKey || String(fb.apiKey).startsWith('INCOLLA') || location.search.includes('demo');
+
+/* ---------- utilità ---------- */
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2, '0');
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today = () => iso(new Date());
+const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const addDays = (s, n) => { const d = parse(s); d.setDate(d.getDate()+n); return iso(d); };
+const mondayOf = s => { const d = parse(s); d.setDate(d.getDate() - ((d.getDay()+6)%7)); return iso(d); };
+const fmt = s => parse(s).toLocaleDateString('it-IT', {weekday:'short', day:'numeric', month:'short'});
+const fmtLong = s => parse(s).toLocaleDateString('it-IT', {day:'numeric', month:'long', year:'numeric'});
+function eta(nascita, ref = new Date()) {
+  const b = parse(nascita);
+  let m = (ref.getFullYear()-b.getFullYear())*12 + ref.getMonth() - b.getMonth();
+  let d = ref.getDate() - b.getDate();
+  if (d < 0) { m--; d += new Date(ref.getFullYear(), ref.getMonth(), 0).getDate(); }
+  return {m, d};
+}
+const addMonths = (s, n) => { const d = parse(s); d.setMonth(d.getMonth()+n); return iso(d); };
+
+/* ---------- dati di riferimento (dagli appunti e dai documenti) ---------- */
+const MOMENTI = {colazione:'Colazione', spuntino:'Spuntino', pranzo:'Pranzo', merenda:'Merenda', cena:'Cena'};
+const ORDINE_MOM = Object.keys(MOMENTI);
+const PROT = ['carne','pesce','uova','legumi','formaggi'];
+const PROT_LBL = {carne:'Carne', pesce:'Pesce', uova:'Uova', legumi:'Legumi', formaggi:'Formaggi'};
+const PROT_ICO = {carne:'🍗', pesce:'🐟', uova:'🥚', legumi:'🫘', formaggi:'🧀'};
+// frequenze settimanali dagli appunti: carne 2, pesce 3/4, uova 2, legumi 3/4, formaggi 2/3
+const FREQ_DEF = {carne:[2,2], pesce:[3,4], uova:[2,2], legumi:[3,4], formaggi:[2,3]};
+const COMP = {carbo:'🍝 Carboidrati', verdura:'🥦 Verdura', frutta:'🍎 Frutta'};
+const CONSIST = {liscia:'Liscia', schiacciata:'Schiacciata', pezzettini:'Pezzettini', solida:'Più solida'};
+const GRAD = {no:'😕 Poco', ni:'😐 Così così', si:'😋 Tanto'};
+const ALLERGENI = {
+  latte:'Latte e derivati', uova:'Uova', pesce:'Pesce', crostacei:'Crostacei', fruttasecca:'Frutta secca a guscio',
+  arachidi:'Arachidi', sesamo:'Sesamo', grano:'Grano'
+};
+const ALL_KW = {
+  latte:['latte','yogurt','formaggi','formaggio','ricotta','parmigiano','grana','mozzarella','burro','caprino','robiola','crescenza','panna','feta','scamorza','pecorino','stracciatella'],
+  uova:['uov','frittat','omelette','strapazzat','tortilla','pancake'],
+  pesce:['pesce','nasello','merluzzo','salmone','branzino','orata','sogliola','sgombro','alici','tonno','trota','spigola','platessa','persico','triglia'],
+  crostacei:['gamber','scamp','granchio','aragosta','mazzancolle','crostace'],
+  fruttasecca:['noci','noce$','mandorl','nocciol','pistacch','anacard','pinoli','frutta secca'],
+  arachidi:['arachid'],
+  sesamo:['sesamo','tahin'],
+  grano:['pasta','pastin','pane','couscous','cous cous','semola','farina','pangrattato','fusilli','penne','spaghetti','tagliatelle','pizza','grano$','biscott']
+};
+const ALL_ESCLUDI = /latte di (cocco|mandorl\w*|avena|riso|soia)|burro di (arachidi|mandorl\w*)|farina di (ceci|mais|riso|castagne|mandorl\w*|grano saraceno)|pasta di (legumi|ceci|lenticchie|riso|mais)|(cous cous|couscous) di legumi|grano saraceno/g;
+const EVITA = [
+  {kw:['miele'], msg:'Miele: crudo no (rischio botulino).'},
+  {kw:['zucchero','zuccher'], msg:'Zucchero: zero zuccheri aggiunti.'},
+  {kw:['succo di frutta','succhi'], msg:'Succhi di frutta: meglio la frutta.'},
+  {kw:['biscott','plasmon','merendin'], msg:'Biscottini, Plasmon e prodotti per l\'infanzia: da evitare.'},
+  {kw:['formaggino'], msg:'Formaggini per l\'infanzia: di solito qualità peggiore.'},
+  {kw:['margarina','olio di semi','olio di girasole'], msg:'Oli vegetali e margarina: sconsigliati, meglio olio extravergine.'},
+  {kw:['funghi','fungo'], msg:'Funghi: da evitare.'},
+  {kw:['tartare','sushi','sashimi'], msg:'Carne e pesce crudi: da evitare.'},
+  {kw:['frutti di mare','cozze','vongole'], msg:'Frutti di mare: gommosi, da evitare.'},
+  {kw:['pane in cassetta','pancarrè','pan carrè'], msg:'Pane in cassetta: meglio pane fresco tostato.'},
+  {kw:['cracker'], msg:'Cracker salati: attenzione al sale.'},
+  {kw:['omogeneizzat','crema di cereali','creme di cereali'], msg:'Omogeneizzati e creme di cereali: usarli il meno possibile.'},
+  {kw:['peperoncino','piccante','pepe$'], msg:'Spezie pepate o piccanti: attenzione.'},
+  {kw:['integrale'], maxMesi:12, msg:'Integrale: da evitare fino all\'anno.'},
+  {kw:['latte vaccino'], maxMesi:12, msg:'Latte vaccino come alimento solo dai 12 mesi (ok come ingrediente, ad es. nel purè).'},
+  {kw:['torta','gelato','cioccolat','nutella'], msg:'Dolci: zero zuccheri aggiunti fino ai 2 anni (un pezzetto di torta al compleanno dopo l\'anno).'}
+];
+const SINTOMI = {
+  cacca_ok:['💩','Cacca regolare'], cacca_dura:['💩','Cacca dura / stitichezza'], cacca_molle:['💩','Cacca molle / diarrea'],
+  rigurgito:['🍼','Rigurgito / reflusso'], vomito:['🤢','Vomito'], pelle:['🩹','Pelle (arrossamento, dermatite)'], altro:['📝','Altro']
+};
+const REAZ = {da_valutare:['In osservazione','amber'], nessuna:['Nessuna reazione','green'], lieve:['Reazione lieve','peach'], importante:['Reazione importante','red']};
+const TAPPE = [
+  {da:0, a:5, titolo:'Prima di iniziare', punti:[
+    'Gli appunti parlano di inizio dai 6 mesi.',
+    'Utile avere: contenitori, frullatore a immersione, passaverdure (per i legumi), pentola a pressione o elettrica.',
+    'Tieni scorte in freezer e qualche pappa pronta per le giornate di fretta.',
+    'Prepara un menu settimanale: una fonte proteica per ogni giorno e qualche piatto che sai che piace.']},
+  {da:6, a:8, titolo:'Inizio (6-8 mesi)', punti:[
+    'Anche un solo pasto va bene all\'inizio; si parte con quello che si mangia di solito, ad esempio due fusilli.',
+    'Se ha ancora fame c\'è il latte, soprattutto all\'inizio.',
+    'Verdure cotte in dosi piccole, senza nasconderle; frutta più matura, mai succhi.',
+    'Allergeni: dai 6 mesi si possono introdurre, uno alla volta.',
+    'Acqua: 800 ml da 6 mesi a 1 anno; all\'inizio proponila durante il pasto.',
+    'Consistenze diverse e farle evolvere.']},
+  {da:9, a:11, titolo:'9-11 mesi', punti:[
+    'Dovrebbe gestire consistenze più solide.',
+    'Intorno ai 9/11 mesi: 3-4 momenti di cibo al giorno.',
+    'Colazione importante: yogurt con frutta, crema di frutta secca, porridge, pancake.',
+    'Se riduce il latte, proponi l\'acqua anche fuori dal pasto.',
+    'Fino all\'anno: evita l\'integrale e tieni botta sui dolci il più possibile.']},
+  {da:12, a:17, titolo:'Dopo l\'anno (12-17 mesi)', punti:[
+    'Il latte vaccino può diventare un alimento (prima solo come ingrediente).',
+    'Acqua: 1200 ml da 1 a 3 anni.',
+    'Dolci: fino a 2 anni zero zuccheri aggiunti; ok un pezzetto di torta al compleanno.',
+    'Condividi il pasto con almeno un familiare: l\'imitazione degli adulti aiuta.']},
+  {da:18, a:30, titolo:'18 mesi - 2 anni', punti:[
+    'Dall\'anno e mezzo/2 può comparire la neofobia (paura dei cibi nuovi): se li ha già provati prima, non sono nuovi.',
+    'Verso i 2 anni può comparire selettività alimentare: si può provare a prevenirla.',
+    'Non insistere, non distrarre, non usare il cibo come premio, non obbligare a finire la porzione.']}
+];
+const REGOLE = [
+  ['Atteggiamento a tavola', ['Nei primi 2 anni si formano abitudini e imprinting che restano da adulti.','Sa autogestirsi in base a fame e sazietà; con dolci e cibi molto saporiti fa più fatica.','Condividi il pasto con almeno un membro della famiglia.','Non insistere, non distrarre, non usare il cibo come premio, non obbligare a finire la porzione.','Niente tabelle con quantità di riferimento: ogni bimbo ha bisogni diversi.']],
+  ['Il piatto', ['Un quarto proteine, un quarto frutta e verdura, metà carboidrati.','Piatto unico oppure componenti separate: separate le riconosce meglio.','Il primo va fatto anche a cena, perché il pane non copre il fabbisogno di carboidrati.','Variare sempre; frutta e verdura di stagione, seguendo i 5 colori.']],
+  ['Frequenze settimanali', ['Carne: 2 volte (bianca).','Pesce: 3-4 volte, meglio piccolo/medio; ok surgelato.','Uova: 2 volte.','Legumi: 3-4 volte, decorticati.','Formaggi: 2-3 volte, non cotti.','Attenzione a 2 fonti proteiche nello stesso pasto (es. carne + parmigiano). L\'eccesso di proteine tra 6 mesi e 2 anni aumenta il rischio di obesità.']],
+  ['Da evitare', ['Miele crudo, zucchero, sale (da moderare), funghi, carne e pesce crudi, frutti di mare.','Latte vaccino come alimento fino a 12 mesi.','Succhi di frutta, margarina e oli vegetali, pane in cassetta.','Biscottini e prodotti per l\'infanzia, Plasmon; omogeneizzati e creme di cereali il meno possibile.','Integrale fino all\'anno.']],
+  ['Allergeni', ['Latte, uova, crostacei, frutta secca, arachidi, sesamo, grano.','Dai 6 mesi si possono introdurre, uno alla volta, per capire quale scatena una reazione.','Attenzione in caso di allergie alimentari in famiglia.']],
+  ['Acqua e latte', ['Acqua 800 ml da 6 mesi a 1 anno, 1200 ml da 1 a 3 anni.','Bevande vegetali senza zuccheri aggiunti ok; yogurt bianco intero senza zuccheri ok.']],
+  ['Cosa fare se...', ['Stitichezza: calare le fibre; prugne secche cotte e frullate, pere mature, mele cotte; attenzione a banana, riso e latticini (astringenti); olio e molta acqua.','Reflusso: può stare male con frutta e latticini; pappe asciutte e più solide.','Dermatite atopica: attenzione ai cibi ricchi di istamina (pomodori, uova, tonno, aceto, fragole, agrumi, frutta secca, formaggi stagionati).']],
+  ['Organizzazione', ['Menu settimanale molto utile.','Cucina per più volte e congela (es. ragù di lenticchie).','Tieni qualche pappa pronta in freezer per i giorni di fretta.']]
+];
+
+/* ---------- livello dati (Firebase oppure prova locale) ---------- */
+let DB = null;
+function mockDB() {
+  const subs = {};
+  const load = c => JSON.parse(localStorage.getItem('svz_'+c) || '[]');
+  const save = (c, a) => localStorage.setItem('svz_'+c, JSON.stringify(a));
+  const emit = c => (subs[c] || []).forEach(f => f(load(c)));
+  return {
+    user: {email: 'prova@locale'},
+    subscribe(c, cb) { (subs[c] = subs[c] || []).push(cb); cb(load(c)); },
+    async put(c, id, o) {
+      const a = load(c);
+      if (id) { const n = {...o, id}; const i = a.findIndex(x => x.id === id); if (i >= 0) a[i] = n; else a.push(n); }
+      else a.push({...o, id: 'm' + Date.now() + Math.random().toString(36).slice(2, 6)});
+      save(c, a); emit(c);
+    },
+    async remove(c, id) { save(c, load(c).filter(x => x.id !== id)); emit(c); }
+  };
+}
+async function firebaseDB() {
+  const V = '10.12.2', base = `https://www.gstatic.com/firebasejs/${V}/`;
+  const [A, Au, F] = await Promise.all([import(base+'firebase-app.js'), import(base+'firebase-auth.js'), import(base+'firebase-firestore.js')]);
+  const app = A.initializeApp(fb);
+  const auth = Au.getAuth(app);
+  let db;
+  try { db = F.initializeFirestore(app, {localCache: F.persistentLocalCache({tabManager: F.persistentMultipleTabManager()})}); }
+  catch (e) { db = F.getFirestore(app); }
+  const clean = o => JSON.parse(JSON.stringify(o));
+  const api = {
+    user: null, auth, Au,
+    subscribe(c, cb) { return F.onSnapshot(F.collection(db, c), s => cb(s.docs.map(d => ({...d.data(), id: d.id}))), e => showError('Errore di lettura (' + c + '): ' + e.code)); },
+    async put(c, id, o) { try { if (id) await F.setDoc(F.doc(db, c, id), clean(o)); else await F.addDoc(F.collection(db, c), clean(o)); } catch (e) { showError('Salvataggio non riuscito: ' + e.code); throw e; } },
+    async remove(c, id) { try { await F.deleteDoc(F.doc(db, c, id)); } catch (e) { showError('Eliminazione non riuscita: ' + e.code); throw e; } },
+    login: (m, p) => Au.signInWithEmailAndPassword(auth, m, p),
+    logout: () => Au.signOut(auth),
+    onUser: cb => Au.onAuthStateChanged(auth, cb)
+  };
+  return api;
+}
+function showError(m) { const e = document.createElement('div'); e.className = 'warn red'; e.textContent = m; $('#app').prepend(e); setTimeout(() => e.remove(), 8000); }
+
+/* ---------- stato ---------- */
+const COLS = ['pasti','sintomi','allergeni','menu','spesa','piatti','settings','giorni','riferimenti','scorte'];
+const S = {pasti:[], sintomi:[], allergeni:[], menu:[], spesa:[], piatti:[], settings:[], giorni:[], riferimenti:[], scorte:[]};
+const ui = {tab:'oggi', day:today(), week:mondayOf(today()), sett:'freq', salute:'allergeni', altro:null, filtro:'tutti', per:30, stat:null, drill:null, sw:mondayOf(today()), q:'', ft:'', fs:''};
+let F = {};  // stato dei moduli aperti
+const NASCITA_DEFAULT = '2026-06-06';
+const imp = () => { const s = S.settings.find(x => x.id === 'main') || {}; return {nome: s.nome || '', nascita: s.nascita || NASCITA_DEFAULT}; };
+
+/* ---------- logica ---------- */
+function tokens(t) { return t.toLowerCase().split(/[^a-zà-ù]+/).filter(Boolean); }
+function match(t, words, kw) {
+  if (kw.includes(' ')) return t.includes(kw);
+  if (kw.endsWith('$')) { const k = kw.slice(0, -1); return words.some(w => w === k); }
+  return words.some(w => w.startsWith(kw));
+}
+function analizza(alimenti, prot, mesi) {
+  const t = alimenti.toLowerCase(), words = tokens(t);
+  const evita = EVITA.filter(r => (!r.maxMesi || mesi < r.maxMesi) && r.kw.some(k => match(t, words, k))).map(r => r.msg);
+  const t2 = t.replace(ALL_ESCLUDI, ' '), w2 = tokens(t2);
+  const allergeni = Object.keys(ALL_KW).filter(k => ALL_KW[k].some(kw => match(t2, w2, kw)));
+  return {evita, allergeni};
+}
+const allIntro = key => S.allergeni.find(a => a.id === key && a.data);
+const inOsservazione = () => S.allergeni.filter(a => a.reazione === 'da_valutare');
+function pastiOrdinati(list) { return [...list].sort((a, b) => ORDINE_MOM.indexOf(a.momento) - ORDINE_MOM.indexOf(b.momento)); }
+function freqSettimana(ws) {
+  const we = addDays(ws, 6);
+  const pasti = S.pasti.filter(p => p.data >= ws && p.data <= we);
+  const menu = S.menu.find(x => x.id === ws);
+  const done = {}, plan = {};
+  PROT.forEach(k => { done[k] = pasti.filter(p => (p.prot || []).includes(k)).length; plan[k] = 0; });
+  if (menu && menu.giorni) for (let d = 0; d < 7; d++) for (const m of ['pranzo','cena']) {
+    const c = menu.giorni[d] && menu.giorni[d][m];
+    if (c && PROT.includes(c.p)) {
+      const g = addDays(ws, d);
+      if (!pasti.some(p => p.data === g && p.momento === m && (p.prot || []).includes(c.p))) plan[c.p]++;
+    }
+  }
+  return {pasti, done, plan, multi: pasti.filter(p => (p.prot || []).length > 1).length, insieme: pasti.filter(p => p.tavola).length};
+}
+function statoFreq(k, done, plan) {
+  const [min, max] = getFreq()[k];
+  if (done > max) return {tag:'red', txt:`Oltre (${done} su max ${max})`};
+  if (done >= min) return {tag:'green', txt:'Raggiunto'};
+  if (done + plan >= min) return {tag:'blue', txt:`In programma (${plan})`};
+  return {tag:'amber', txt: `Mancano ${min - done - plan}`};
+}
+const tappaCorrente = m => TAPPE.find(t => m >= t.da && m <= t.a) || TAPPE[TAPPE.length-1];
+
+/* ---------- rendering ---------- */
+function tagClass(c) { return c === 'green' ? '' : c; }
+function render() {
+  if (!DB || !DB.user) return;
+  const view = {oggi: vOggi, settimana: vSettimana, piatti: vPiatti, salute: vSalute, stat: vStat, altro: vAltro}[ui.tab]();
+  $('#app').innerHTML = (demo ? '<div class="banner">Modalità prova: i dati restano solo su questo telefono. Configura Firebase per condividerli (vedi guida).</div>' : '') + view;
+  const nav = $('#nav'); nav.style.display = 'flex';
+  const items = [['oggi','🍽️','Oggi'],['settimana','📅','Settim.'],['piatti','📖','Piatti'],['salute','🩺','Salute'],['stat','📊','Statistiche'],['altro','⚙️','Altro']];
+  nav.innerHTML = items.map(([k, i, l]) => `<button class="${ui.tab === k ? 'on' : ''}" data-a="tab" data-v="${k}"><span>${i}</span>${l}</button>`).join('');
+}
+function seg(opts, cur, action) {
+  return `<div class="seg">${opts.map(([k, l]) => `<button class="${cur === k ? 'on' : ''}" data-a="${action}" data-v="${k}">${l}</button>`).join('')}</div>`;
+}
+function pastoCard(p, conData) {
+  const prot = (p.prot || []).map(k => `<span class="tag peach">${PROT_ICO[k]} ${PROT_LBL[k]}</span>`).join('');
+  const comp = (p.comp || []).map(k => `<span class="tag">${COMP[k]}</span>`).join('');
+  const extra = [p.consistenza ? CONSIST[p.consistenza] : '', p.gradimento ? GRAD[p.gradimento] : '', p.tavola ? '👨‍👩‍👦 a tavola con noi' : ''].filter(Boolean).join(' · ');
+  return `<div class="card tap" data-a="editPasto" data-id="${p.id}">
+    <div class="row between"><h3>${conData ? fmt(p.data) + ' · ' : ''}${MOMENTI[p.momento] || ''}${p.ora ? ' · ' + esc(p.ora) : ''}</h3><span class="muted small">${esc(p.autore || '')}</span></div>
+    <div>${esc(p.alimenti) || '<span class="muted">(nessun alimento scritto)</span>'}</div>
+    <div>${prot}${comp}</div>
+    ${extra ? `<div class="muted small">${esc(extra)}</div>` : ''}
+    ${p.note ? `<div class="muted small">📝 ${esc(p.note)}</div>` : ''}</div>`;
+}
+function vOggi() {
+  const {nome, nascita} = imp(), e = eta(nascita), t = tappaCorrente(e.m);
+  const nato = parse(nascita) <= new Date();
+  const giorno = ui.day, isOggi = giorno === today();
+  const pasti = pastiOrdinati(S.pasti.filter(p => p.data === giorno));
+  const sint = S.sintomi.filter(s => s.data === giorno);
+  const ws = mondayOf(giorno), idx = (parse(giorno).getDay() + 6) % 7;
+  const menu = S.menu.find(x => x.id === ws);
+  const pianif = [];
+  if (menu && menu.giorni && menu.giorni[idx]) for (const m of ['pranzo','cena']) {
+    const c = menu.giorni[idx][m];
+    if (c && (c.t || c.p) && !pasti.some(p => p.momento === m)) pianif.push({m, c});
+  }
+  const osserv = inOsservazione();
+  let h = `<h1>${nome ? 'Svezzamento di ' + esc(nome) : 'Svezzamento'}</h1><div class="muted">${nato ? `${e.m} mesi e ${e.d} giorni` : ''}${e.m < 6 ? ` · 6 mesi il ${fmtLong(addMonths(nascita, 6))}` : ''}</div>`;
+  h += `<div class="card"><h3>📍 ${esc(t.titolo)}</h3><ul class="pts">${t.punti.slice(0, 3).map(x => `<li>${esc(x)}</li>`).join('')}</ul><div style="margin-top:8px"><button class="soft small" data-a="vaiTappe">Tutte le tappe</button></div></div>`;
+  if (osserv.length) h += `<div class="warn">👀 Allergeni in osservazione: <b>${osserv.map(a => ALLERGENI[a.id]).join(', ')}</b>. Gli appunti dicono di introdurli uno alla volta: segna l'esito in Salute prima del prossimo.</div>`;
+  h += `<div class="dayhead"><button class="ghost small" data-a="giorno" data-v="-1">‹</button><b>${isOggi ? 'Oggi · ' : ''}${fmt(giorno)}</b><button class="ghost small" data-a="giorno" data-v="1">›</button></div>`;
+  h += pasti.length ? pasti.map(pastoCard).join('') : `<div class="card muted">Nessun pasto registrato in questo giorno.</div>`;
+  pianif.forEach(({m, c}) => {
+    h += `<div class="card"><div class="muted small">In programma · ${MOMENTI[m]}</div><div>${esc(c.t || '')} ${c.p ? `<span class="tag peach">${PROT_ICO[c.p]} ${PROT_LBL[c.p]}</span>` : ''}</div><div style="margin-top:6px"><button class="soft small" data-a="regPianif" data-m="${m}">Registra come mangiato</button></div></div>`;
+  });
+  h += `<div class="row" style="margin:12px 0"><button class="grow" data-a="nuovoPasto">+ Pasto</button><button class="soft grow" data-a="nuovoSintomo">+ Sintomo</button></div>`;
+  h += cardAcqua(giorno);
+  if (sint.length) h += `<h2>Sintomi del giorno</h2>` + sint.map(sintCard).join('');
+  return h;
+}
+function sintCard(s) {
+  const [ico, lbl] = SINTOMI[s.tipo] || ['📝', 'Altro'];
+  return `<div class="card tap" data-a="editSintomo" data-id="${s.id}"><div class="row between"><b>${ico} ${lbl}</b>${s.intensita ? `<span class="tag ${s.intensita === 'forte' ? 'red' : s.intensita === 'media' ? 'amber' : 'gray'}">${esc(s.intensita)}</span>` : ''}</div>${s.note ? `<div class="muted small">${esc(s.note)}</div>` : ''}</div>`;
+}
+function vSettimana() {
+  const ws = ui.week, we = addDays(ws, 6);
+  let h = `<h1>Settimana</h1>` + seg([['freq','Frequenze'],['menu','Menu'],['spesa','Spesa']], ui.sett, 'sett');
+  if (ui.sett !== 'spesa') h += `<div class="dayhead"><button class="ghost small" data-a="settimana" data-v="-7">‹</button><b>${fmt(ws)} – ${fmt(we)}</b><button class="ghost small" data-a="settimana" data-v="7">›</button></div>`;
+  if (ui.sett === 'freq') {
+    const f = freqSettimana(ws);
+    h += PROT.map(k => {
+      const [min, max] = getFreq()[k], st = statoFreq(k, f.done[k], f.plan[k]);
+      const target = min === max ? `${min} volte` : `${min}-${max} volte`;
+      const pct = Math.min(100, Math.round(f.done[k] / max * 100));
+      return `<div class="card"><div class="row between"><h3>${PROT_ICO[k]} ${PROT_LBL[k]}</h3><span class="tag ${tagClass(st.tag)}">${st.txt}</span></div><div class="muted small">Obiettivo: ${target} a settimana · fatti ${f.done[k]}${f.plan[k] ? ` · in programma ${f.plan[k]}` : ''}</div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+    }).join('');
+    h += `<div class="card"><div class="muted small">Pasti registrati: <b>${f.pasti.length}</b> · a tavola con noi: <b>${f.insieme}</b>${f.multi ? ` · con più fonti proteiche: <b>${f.multi}</b>` : ''}</div></div>`;
+    h += `<div class="info">Le frequenze vengono dai pasti registrati con la fonte proteica indicata e dal menu pianificato. Servono come promemoria, non come obbligo.</div>`;
+  } else if (ui.sett === 'menu') {
+    const menu = S.menu.find(x => x.id === ws) || {giorni: {}};
+    const names = S.piatti.map(p => `<option value="${esc(p.nome)}">`).join('');
+    h += `<datalist id="piattiList">${names}</datalist>`;
+    for (let d = 0; d < 7; d++) {
+      const g = (menu.giorni || {})[d] || {};
+      h += `<div class="card"><b>${fmt(addDays(ws, d))}</b>` + ['pranzo','cena'].map(m => {
+        const c = g[m] || {};
+        return `<div class="muted small" style="margin-top:6px">${MOMENTI[m]}</div><div class="mrow"><input list="piattiList" placeholder="Piatto" value="${esc(c.t || '')}" data-c="menuT" data-d="${d}" data-m="${m}"><select data-c="menuP" data-d="${d}" data-m="${m}"><option value="">Proteina</option>${PROT.map(k => `<option value="${k}" ${c.p === k ? 'selected' : ''}>${PROT_LBL[k]}</option>`).join('')}</select></div>`;
+      }).join('') + `</div>`;
+    }
+    h += `<button class="block" data-a="proponiMenu">✨ Proponi un menu</button><div class="row" style="margin-top:8px"><button class="soft grow" data-a="copiaSettPrec">Copia dalla scorsa settimana</button><button class="soft grow" data-a="spesaMenu">🛒 Spesa dal menu</button></div>`;
+  } else {
+    h += `<div class="row" style="margin:10px 0"><input id="nuovaSpesa" placeholder="Aggiungi alla spesa" data-enter="addSpesa"><button data-a="addSpesa">+</button></div>`;
+    h += `<div class="row wrap" style="margin-bottom:10px"><button class="soft small" data-a="importaLista">📋 Importa una lista</button><button class="soft small" data-a="scorteMancano" data-t="tutte">🧊 Dalle scorte mancanti</button></div>`;
+    const items = [...S.spesa].sort((a, b) => (a.fatto === b.fatto ? (a.ts || 0) - (b.ts || 0) : a.fatto ? 1 : -1));
+    h += items.length ? `<div class="card">${items.map(i => `<div class="check ${i.fatto ? 'done' : ''}"><input type="checkbox" ${i.fatto ? 'checked' : ''} data-c="spesaToggle" data-id="${i.id}"><span class="grow">${esc(i.testo)}</span><button class="danger small" data-a="delSpesa" data-id="${i.id}">✕</button></div>`).join('')}</div>` : `<div class="card muted">La lista è vuota.</div>`;
+    if (items.some(i => i.fatto)) h += `<button class="ghost block" data-a="svuotaSpesa">Rimuovi gli spuntati</button>`;
+  }
+  return h;
+}
+function vSalute() {
+  let h = `<h1>Salute</h1>` + seg([['allergeni','Allergeni'],['sintomi','Sintomi']], ui.salute, 'salute');
+  if (ui.salute === 'allergeni') {
+    h += `<div class="info">Dai 6 mesi si possono introdurre, <b>uno alla volta</b>, così se c'è una reazione si sa quale alimento l'ha causata. In caso di reazione importante (ad esempio difficoltà a respirare o gonfiore del viso) chiama subito il 112; per qualsiasi dubbio sente il pediatra.</div>`;
+    h += Object.keys(ALLERGENI).map(k => {
+      const a = allIntro(k);
+      if (!a) return `<div class="card"><div class="row between"><div><h3>${ALLERGENI[k]}</h3><span class="tag gray">Non ancora introdotto</span></div><button class="soft small" data-a="editAllergene" data-k="${k}">Segna introdotto</button></div></div>`;
+      const [lbl, c] = REAZ[a.reazione] || REAZ.da_valutare;
+      return `<div class="card tap" data-a="editAllergene" data-k="${k}"><div class="row between"><div><h3>${ALLERGENI[k]}</h3><span class="tag ${tagClass(c)}">${lbl}</span></div><span class="muted small">dal ${fmt(a.data)}</span></div>${a.note ? `<div class="muted small">${esc(a.note)}</div>` : ''}</div>`;
+    }).join('');
+  } else {
+    h += `<button class="block" data-a="nuovoSintomo">+ Sintomo</button>`;
+    const da = addDays(today(), -30);
+    const list = S.sintomi.filter(s => s.data >= da).sort((a, b) => b.data.localeCompare(a.data));
+    if (!list.length) h += `<div class="card muted">Nessun sintomo negli ultimi 30 giorni.</div>`;
+    let cur = '';
+    list.forEach(s => { if (s.data !== cur) { cur = s.data; h += `<h2>${fmt(cur)}</h2>`; } h += sintCard(s); });
+  }
+  return h;
+}
+/* ---------- moduli (sheet) ---------- */
+function openSheet(html) { $('#sheetBody').innerHTML = html; $('#sheet').classList.remove('hidden'); }
+function closeSheet() { $('#sheet').classList.add('hidden'); $('#sheetBody').innerHTML = ''; F = {}; render(); }
+const chipsHtml = (obj, sel, action) => Object.entries(obj).map(([k, l]) => `<button type="button" class="chip ${sel.includes(k) ? 'on' : ''}" data-a="${action}" data-v="${k}">${l}</button>`).join('');
+const guessMomento = () => { const h = new Date().getHours(); return h < 10 ? 'colazione' : h < 15 ? 'pranzo' : h < 18 ? 'merenda' : 'cena'; };
+
+function formPasto(p = {}) {
+  F = {tipo:'pasto', id:p.id || null, data:p.data || ui.day, ora:p.ora ?? (p.id ? '' : (ui.day === today() ? hhmm() : '')), momento:p.momento || guessMomento(), alimenti:p.alimenti || '', comp:[...(p.comp || [])], prot:[...(p.prot || [])], consistenza:p.consistenza || '', gradimento:p.gradimento || '', tavola:p.tavola ?? true, note:p.note || '', newAll:{}};
+  openSheet(`<h1>${F.id ? 'Modifica pasto' : 'Nuovo pasto'}</h1>
+  <label class="f">Quando</label><div class="row"><input type="date" value="${F.data}" data-i="data"><select data-i="momento" style="width:140px">${Object.entries(MOMENTI).map(([k, l]) => `<option value="${k}" ${F.momento === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+  <label class="f">Ora (facoltativa)</label><input type="time" value="${F.ora}" data-i="ora">
+  <label class="f">Cosa ha mangiato</label><textarea data-i="alimenti" placeholder="Es. pastina, zucchine, nasello">${esc(F.alimenti)}</textarea>
+  <div id="avvisi"></div>
+  <label class="f">Componenti del piatto</label><div class="chips" id="chComp">${chipsHtml(COMP, F.comp, 'tComp')}</div>
+  <label class="f">Fonte proteica</label><div class="chips" id="chProt">${chipsHtml(Object.fromEntries(PROT.map(k => [k, PROT_ICO[k] + ' ' + PROT_LBL[k]])), F.prot, 'tProt')}</div>
+  <label class="f">Consistenza</label><div class="chips" id="chCons">${Object.entries(CONSIST).map(([k, l]) => `<button type="button" class="chip ${F.consistenza === k ? 'on' : ''}" data-a="tCons" data-v="${k}">${l}</button>`).join('')}</div>
+  <label class="f">Com'è andata</label><div class="chips" id="chGrad">${Object.entries(GRAD).map(([k, l]) => `<button type="button" class="chip ${F.gradimento === k ? 'on' : ''}" data-a="tGrad" data-v="${k}">${l}</button>`).join('')}</div>
+  <label class="chk" style="margin-top:14px"><input type="checkbox" data-i="tavola" ${F.tavola ? 'checked' : ''}> A tavola con almeno un familiare</label>
+  <label class="f">Note</label><textarea data-i="note" placeholder="Facoltativo">${esc(F.note)}</textarea>
+  <div class="row" style="margin-top:16px"><button class="grow" data-a="salvaPasto">Salva</button><button class="ghost" data-a="chiudi">Annulla</button></div>
+  ${F.id ? `<button class="danger block" style="margin-top:10px" data-a="delPasto">Elimina il pasto</button>` : ''}`);
+  updAvvisi();
+}
+function updAvvisi() {
+  if (F.tipo !== 'pasto') return;
+  const el = $('#avvisi'); if (!el) return;
+  const mesi = eta(imp().nascita).m;
+  const r = analizza(F.alimenti, F.prot, mesi);
+  let h = r.evita.map(m => `<div class="warn">⚠️ ${esc(m)}</div>`).join('');
+  if (F.prot.length > 1) h += `<div class="warn">⚠️ Più di una fonte proteica nello stesso pasto (${F.prot.map(k => PROT_LBL[k].toLowerCase()).join(' + ')}). Negli appunti si evita: l'eccesso di proteine tra 6 mesi e 2 anni aumenta il rischio di obesità.</div>`;
+  const nuovi = r.allergeni.filter(k => !allIntro(k));
+  const altri = inOsservazione().filter(a => !nuovi.includes(a.id));
+  nuovi.forEach(k => { if (F.newAll[k] === undefined) F.newAll[k] = nuovi.length === 1 && altri.length === 0; });
+  Object.keys(F.newAll).forEach(k => { if (!nuovi.includes(k)) delete F.newAll[k]; });
+  if (nuovi.length > 1) h += `<div class="warn">⚠️ Più allergeni nuovi insieme (${nuovi.map(k => ALLERGENI[k].toLowerCase()).join(', ')}): meglio uno alla volta.</div>`;
+  if (nuovi.length && altri.length) h += `<div class="warn">⚠️ Hai ancora in osservazione: ${altri.map(a => ALLERGENI[a.id].toLowerCase()).join(', ')}. Meglio chiudere prima quell'esito.</div>`;
+  nuovi.forEach(k => { h += `<label class="chk"><input type="checkbox" data-c="newAll" data-k="${k}" ${F.newAll[k] ? 'checked' : ''}> <span>Nuovo allergene: <b>${ALLERGENI[k].toLowerCase()}</b>. Segnalo come introdotto il ${fmt(F.data)}</span></label>`; });
+  el.innerHTML = h;
+}
+function formSintomo(s = {}) {
+  F = {tipo:'sintomo', id:s.id || null, data:s.data || ui.day, sintomo:s.tipo || 'cacca_ok', intensita:s.intensita || '', note:s.note || ''};
+  openSheet(`<h1>${F.id ? 'Modifica sintomo' : 'Nuovo sintomo'}</h1>
+  <label class="f">Giorno</label><input type="date" value="${F.data}" data-i="data">
+  <label class="f">Cosa</label><div class="chips">${Object.entries(SINTOMI).map(([k, [i, l]]) => `<button type="button" class="chip ${F.sintomo === k ? 'on' : ''}" data-a="tSint" data-v="${k}">${i} ${l}</button>`).join('')}</div>
+  <label class="f">Intensità (facoltativa)</label><div class="chips">${['lieve','media','forte'].map(k => `<button type="button" class="chip ${F.intensita === k ? 'on' : ''}" data-a="tInt" data-v="${k}">${k}</button>`).join('')}</div>
+  <label class="f">Note</label><textarea data-i="note" placeholder="Es. dopo quale pasto, da quanto tempo...">${esc(F.note)}</textarea>
+  <div class="row" style="margin-top:16px"><button class="grow" data-a="salvaSintomo">Salva</button><button class="ghost" data-a="chiudi">Annulla</button></div>
+  ${F.id ? `<button class="danger block" style="margin-top:10px" data-a="delSintomo">Elimina</button>` : ''}`);
+}
+function formPiatto(p = {}) {
+  F = {tipo:'piatto', id:p.id || null, nome:p.nome || '', prot:p.prot || '', ingredienti:p.ingredienti || '', fonte:p.fonte || '', note:p.note || '', piace:!!p.piace};
+  openSheet(`<h1>${F.id ? 'Modifica piatto' : 'Nuovo piatto'}</h1>
+  <label class="f">Nome</label><input data-i="nome" value="${esc(F.nome)}" placeholder="Es. Pasta con ragù di lenticchie">
+  <label class="f">Fonte proteica</label><div class="chips"><button type="button" class="chip ${!F.prot ? 'on' : ''}" data-a="tPiattoProt" data-v="">Nessuna</button>${PROT.map(k => `<button type="button" class="chip ${F.prot === k ? 'on' : ''}" data-a="tPiattoProt" data-v="${k}">${PROT_ICO[k]} ${PROT_LBL[k]}</button>`).join('')}</div>
+  <label class="f">Ingredienti principali</label><textarea data-i="ingredienti">${esc(F.ingredienti)}</textarea>
+  <label class="f">Dove trovare la ricetta</label><input data-i="fonte" value="${esc(F.fonte)}" placeholder="Es. Ricettario.pdf, pagina 4">
+  <label class="f">Note</label><textarea data-i="note">${esc(F.note)}</textarea>
+  <label class="chk" style="margin-top:12px"><input type="checkbox" data-i="piace" ${F.piace ? 'checked' : ''}> Gli piace</label>
+  <div class="row" style="margin-top:16px"><button class="grow" data-a="salvaPiatto">Salva</button><button class="ghost" data-a="chiudi">Annulla</button></div>
+  ${F.id ? `<button class="danger block" style="margin-top:10px" data-a="delPiatto">Elimina</button>` : ''}`);
+}
+function formAllergene(k) {
+  const a = allIntro(k) || {};
+  F = {tipo:'allergene', key:k, data:a.data || today(), reazione:a.reazione || 'da_valutare', note:a.note || '', esisteva:!!a.data};
+  openSheet(`<h1>${ALLERGENI[k]}</h1>
+  <label class="f">Introdotto il</label><input type="date" value="${F.data}" data-i="data">
+  <label class="f">Esito</label><div class="chips">${Object.entries(REAZ).map(([r, [l]]) => `<button type="button" class="chip ${F.reazione === r ? 'on' : ''}" data-a="tReaz" data-v="${r}">${l}</button>`).join('')}</div>
+  <div id="reazAvviso">${F.reazione === 'importante' ? '<div class="warn red">Parlane con il pediatra. Se compaiono difficoltà a respirare o gonfiore del viso, chiama il 112.</div>' : ''}</div>
+  <label class="f">Note</label><textarea data-i="note" placeholder="Cosa ha mangiato, cosa hai notato...">${esc(F.note)}</textarea>
+  <div class="row" style="margin-top:16px"><button class="grow" data-a="salvaAllergene">Salva</button><button class="ghost" data-a="chiudi">Annulla</button></div>
+  ${F.esisteva ? `<button class="danger block" style="margin-top:10px" data-a="delAllergene">Segna come non introdotto</button>` : ''}`);
+}
+
+/* ---------- azioni ---------- */
+const A = {
+  tab: el => { ui.tab = el.dataset.v; ui.altro = null; render(); window.scrollTo(0, 0); },
+  chiudi: () => closeSheet(),
+  giorno: el => { ui.day = addDays(ui.day, +el.dataset.v); render(); },
+  settimana: el => { ui.week = addDays(ui.week, +el.dataset.v); render(); },
+  sett: el => { ui.sett = el.dataset.v; render(); },
+  salute: el => { ui.salute = el.dataset.v; render(); },
+  filtro: el => { ui.filtro = el.dataset.v; render(); },
+  altro: el => { ui.altro = el.dataset.v || null; render(); window.scrollTo(0, 0); },
+  vaiTappe: () => { ui.tab = 'altro'; ui.altro = 'tappe'; render(); window.scrollTo(0, 0); },
+  logout: () => DB.logout(),
+  nuovoPasto: () => formPasto(),
+  editPasto: el => { const p = S.pasti.find(x => x.id === el.dataset.id); if (p) formPasto(p); },
+  regPianif: el => {
+    const ws = mondayOf(ui.day), idx = (parse(ui.day).getDay() + 6) % 7, menu = S.menu.find(x => x.id === ws);
+    const c = menu.giorni[idx][el.dataset.m];
+    formPasto({momento: el.dataset.m, alimenti: c.t || '', prot: c.p ? [c.p] : []});
+  },
+  tComp: el => { toggle(F.comp, el.dataset.v); el.classList.toggle('on'); },
+  tProt: el => { toggle(F.prot, el.dataset.v); el.classList.toggle('on'); updAvvisi(); },
+  tCons: el => { F.consistenza = F.consistenza === el.dataset.v ? '' : el.dataset.v; $('#chCons').querySelectorAll('.chip').forEach(b => b.classList.toggle('on', b.dataset.v === F.consistenza)); },
+  tGrad: el => { F.gradimento = F.gradimento === el.dataset.v ? '' : el.dataset.v; $('#chGrad').querySelectorAll('.chip').forEach(b => b.classList.toggle('on', b.dataset.v === F.gradimento)); },
+  salvaPasto: async () => {
+    const o = {data:F.data, ora:F.ora || '', momento:F.momento, alimenti:F.alimenti.trim(), comp:F.comp, prot:F.prot, consistenza:F.consistenza, gradimento:F.gradimento, tavola:!!F.tavola, note:F.note.trim(), autore:(DB.user.email || '').split('@')[0]};
+    if (!o.alimenti && !o.prot.length) { alert('Scrivi almeno cosa ha mangiato.'); return; }
+    const nuovi = Object.keys(F.newAll).filter(k => F.newAll[k]), data = F.data, id = F.id;
+    await DB.put('pasti', id, o);
+    for (const k of nuovi) await DB.put('allergeni', k, {data, reazione:'da_valutare', note:'Introdotto dal pasto: ' + o.alimenti.slice(0, 60)});
+    ui.day = data; closeSheet();
+  },
+  delPasto: async () => { if (confirm('Eliminare questo pasto?')) { await DB.remove('pasti', F.id); closeSheet(); } },
+  nuovoSintomo: () => formSintomo(),
+  editSintomo: el => { const s = S.sintomi.find(x => x.id === el.dataset.id); if (s) formSintomo(s); },
+  tSint: el => { F.sintomo = el.dataset.v; el.parentElement.querySelectorAll('.chip').forEach(b => b.classList.toggle('on', b.dataset.v === F.sintomo)); },
+  tInt: el => { F.intensita = F.intensita === el.dataset.v ? '' : el.dataset.v; el.parentElement.querySelectorAll('.chip').forEach(b => b.classList.toggle('on', b.dataset.v === F.intensita)); },
+  salvaSintomo: async () => { await DB.put('sintomi', F.id, {data:F.data, tipo:F.sintomo, intensita:F.intensita, note:F.note.trim()}); ui.day = F.data; closeSheet(); },
+  delSintomo: async () => { if (confirm('Eliminare questo sintomo?')) { await DB.remove('sintomi', F.id); closeSheet(); } },
+  nuovoPiatto: () => formPiatto(),
+  editPiatto: el => { const p = S.piatti.find(x => x.id === el.dataset.id); if (p) formPiatto(p); },
+  tPiattoProt: el => { F.prot = el.dataset.v; el.parentElement.querySelectorAll('.chip').forEach(b => b.classList.toggle('on', b.dataset.v === F.prot)); },
+  salvaPiatto: async () => {
+    if (!F.nome.trim()) { alert('Scrivi il nome del piatto.'); return; }
+    await DB.put('piatti', F.id, {nome:F.nome.trim(), prot:F.prot, ingredienti:F.ingredienti.trim(), fonte:F.fonte.trim(), note:F.note.trim(), piace:!!F.piace}); closeSheet();
+  },
+  delPiatto: async () => { if (confirm('Eliminare questo piatto?')) { await DB.remove('piatti', F.id); closeSheet(); } },
+  stella: async el => { const p = S.piatti.find(x => x.id === el.dataset.id); if (p) { const {id, ...rest} = p; await DB.put('piatti', id, {...rest, piace: !p.piace}); } },
+  copiaSettPrec: async () => {
+    const prev = S.menu.find(x => x.id === addDays(ui.week, -7));
+    if (!prev || !prev.giorni) { alert('La settimana precedente non ha un menu.'); return; }
+    if (S.menu.find(x => x.id === ui.week) && !confirm('Sostituire il menu di questa settimana?')) return;
+    await DB.put('menu', ui.week, {giorni: prev.giorni});
+  },
+  addSpesa: async () => { const i = $('#nuovaSpesa'); const t = i.value.trim(); if (!t) return; i.value = ''; await DB.put('spesa', null, {testo:t, fatto:false, ts:Date.now()}); },
+  delSpesa: async el => { await DB.remove('spesa', el.dataset.id); },
+  svuotaSpesa: async () => { for (const i of S.spesa.filter(x => x.fatto)) await DB.remove('spesa', i.id); },
+  editAllergene: el => formAllergene(el.dataset.k),
+  tReaz: el => { F.reazione = el.dataset.v; el.parentElement.querySelectorAll('.chip').forEach(b => b.classList.toggle('on', b.dataset.v === F.reazione)); $('#reazAvviso').innerHTML = F.reazione === 'importante' ? '<div class="warn red">Parlane con il pediatra. Se compaiono difficoltà a respirare o gonfiore del viso, chiama il 112.</div>' : ''; },
+  salvaAllergene: async () => { await DB.put('allergeni', F.key, {data:F.data, reazione:F.reazione, note:F.note.trim()}); closeSheet(); },
+  delAllergene: async () => { if (confirm('Segnare come non introdotto?')) { await DB.remove('allergeni', F.key); closeSheet(); } },
+  salvaImp: async () => { const nome = $('#setNome').value.trim(), nascita = $('#setNasc').value; if (!nascita) { alert('Inserisci la data di nascita.'); return; } await DB.put('settings', 'main', {nome, nascita}); ui.altro = null; render(); },
+  copiaDoc: async () => { try { await navigator.clipboard.writeText(docAssistente()); alert('Copiato.'); } catch (e) { const r = document.createRange(); r.selectNodeContents($('#docTxt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); alert('Seleziona e copia il testo.'); } }
+};
+function toggle(arr, v) { const i = arr.indexOf(v); if (i >= 0) arr.splice(i, 1); else arr.push(v); }
+
+const C = {
+  newAll: el => { F.newAll[el.dataset.k] = el.checked; },
+  spesaToggle: async el => { const i = S.spesa.find(x => x.id === el.dataset.id); if (i) { const {id, ...rest} = i; await DB.put('spesa', id, {...rest, fatto: el.checked}); } },
+  menuT: el => salvaMenu(+el.dataset.d, el.dataset.m, 't', el.value),
+  menuP: el => salvaMenu(+el.dataset.d, el.dataset.m, 'p', el.value)
+};
+async function salvaMenu(d, m, campo, val) {
+  const cur = S.menu.find(x => x.id === ui.week);
+  const giorni = JSON.parse(JSON.stringify((cur && cur.giorni) || {}));
+  giorni[d] = giorni[d] || {}; giorni[d][m] = giorni[d][m] || {};
+  giorni[d][m][campo] = val;
+  await DB.put('menu', ui.week, {giorni});
+}
+
+document.addEventListener('click', e => { const el = e.target.closest('[data-a]'); if (!el) return; if (el.dataset.a === 'stella') e.stopPropagation(); const f = A[el.dataset.a]; if (f) f(el, e); });
+document.addEventListener('change', e => {
+  const c = e.target.closest('[data-c]'); if (c && C[c.dataset.c]) { C[c.dataset.c](c, e); return; }
+  const i = e.target.closest('[data-i]'); if (i && i.type === 'date') onInput(i);
+});
+document.addEventListener('input', e => { const i = e.target.closest('[data-i]'); if (i) onInput(i); });
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.dataset.enter) { e.preventDefault(); A[e.target.dataset.enter](e.target); } });
+function onInput(el) {
+  const k = el.dataset.i;
+  F[k] = el.type === 'checkbox' ? el.checked : el.value;
+  if (F.tipo === 'pasto' && (k === 'alimenti' || k === 'data')) updAvvisi();
+}
+
+/* ============================================================
+   STATISTICHE (v2): ogni grafico e ogni riga è cliccabile e mostra i pasti/sintomi che stanno dietro al numero
+   ============================================================ */
+const PERIODI = [[7,'7 giorni'],[30,'30 giorni'],[90,'3 mesi'],[0,'Tutto']];
+const DOW = ['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
+const COLORI = {verde:['🟢','Verde'], rosso:['🔴','Rosso'], giallo:['🟠','Giallo / arancio'], bianco:['⚪','Bianco'], viola:['🟣','Viola / blu']};
+const COL_RX = {
+  verde:/zucchin|spinac|broccol|piselli|cavolo nero|verza|fagiolin|kiwi|rucola|lattug|insalata|cetriol|asparag|carciof|cime|bietol|erbett|cavolo romano|cavolini|basilico|prezzemolo|avocado|puntarell|agretti|friarell/,
+  rosso:/pomodor|peperon\w* ross|fragol|anguria|ciliegi|melagran|lampon|barbabietol|radicchi|ravanell|mela rossa|peperon/,
+  giallo:/carot|zucca|patat\w* dolc|aranc|mandarin|clementin|pesca|pesche|albicocc|melone|caco|cachi|mango|papaya|peperon\w* gial|mais|polenta|limon|ananas|nespol|cedro|pompelm/,
+  bianco:/cavolfior|finocch|patat|porr|cipoll|sedano|aglio|\bper[ae]\b|\bmel[ae]\b|banana|topinambur|\brap[ae]\b|daikon|sedano rapa|indivia|cardo|champignon/,
+  viola:/melanzan|cavolo viola|cavolo cappuccio viol|mirtill|uva nera|prugn|fich|barbabietol|radicchio|ribes|more\b|susin|frutti di bosco|patat\w* viola/
+};
+const PRODUCE_RX = /zucchin|zucca|carot|spinac|broccol|cavol|finocch|patat|pomodor|peperon|melanzan|piselli|fagiolin|bietol|erbett|radicchi|rucola|insalata|lattug|sedano|porr|cipoll|carciof|asparag|barbabietol|\bmel[ae]\b|\bper[ae]\b|banana|aranc|mandarin|clementin|kiwi|pesch|albicocc|susin|fragol|ciliegi|\buva\b|melone|anguria|fic[oh]|cach|caco|melagran|limon|mirtill|lampon|avocado|zenzero|topinambur|verza|\brap[ae]\b|indivia|cardi|tarassaco|prezzemolo|basilico/;
+const STOPW = new Set(['un','una','uno','il','la','le','lo','dei','degli','delle','di','del','della','al','alla','allo','ai','alle','po','poco','poca','pochi','qualche','piccolo','piccola','grande','pezzi','pezzetti','pezzettini','fette','fetta','cucchiaio','cucchiaino','cucchiai','circa']);
+
+const inPer = d => !ui.per || (d >= addDays(today(), -(ui.per - 1)) && d <= today());
+const pP = () => S.pasti.filter(p => inPer(p.data));
+const sP = () => S.sintomi.filter(s => inPer(s.data));
+const sorted = a => [...a].sort((x, y) => (y.data || '').localeCompare(x.data || '') || ORDINE_MOM.indexOf(y.momento) - ORDINE_MOM.indexOf(x.momento));
+const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
+const fmtS = d => { const x = parse(d); return pad(x.getDate()) + '/' + pad(x.getMonth() + 1); };
+const dowOf = d => (parse(d).getDay() + 6) % 7;
+const firstDate = () => S.pasti.map(p => p.data).sort()[0];
+const periodoStart = () => ui.per ? addDays(today(), -(ui.per - 1)) : (firstDate() || today());
+const periodoDays = () => ui.per || Math.max(1, Math.round((parse(today()) - parse(periodoStart())) / 864e5) + 1);
+function weeksInPeriod(max = 26) {
+  const cur = mondayOf(today()); let w = mondayOf(periodoStart()); const out = [];
+  while (w <= cur) { out.push(w); w = addDays(w, 7); }
+  return out.slice(-max);
+}
+const mesiAt = d => eta(imp().nascita, parse(d)).m;
+const isMain = p => p.momento === 'pranzo' || p.momento === 'cena';
+
+/* ---- alimenti ---- */
+function foodsOf(txt) {
+  return String(txt || '').toLowerCase().replace(/[()]/g, ',').split(/[,;+\n]|\s+e\s+|\s+con\s+|\s+ed\s+/)
+    .map(x => x.replace(/[^a-zà-ù' ]/g, ' ').replace(/\bun po'|\bun pò/g, ' ').split(/\s+/).filter(w => w && !STOPW.has(w) && w.length > 1).join(' ').trim())
+    .filter(x => x.length >= 3);
+}
+const stemW = w => w.length > 4 ? w.replace(/[aeio]$/, '') : w;
+const fkey = f => f.split(' ').map(stemW).join(' ');
+const GVAL = {si: 2, ni: 1, no: 0};
+let _fi = null, _fiSig = '';
+function foodIndex() {
+  const sig = S.pasti.length + '|' + S.pasti.map(p => p.id + (p.alimenti || '').length).join(',');
+  if (_fi && sig === _fiSig) return _fi;
+  const m = new Map();
+  const list = [...S.pasti].sort((a, b) => a.data.localeCompare(b.data) || ORDINE_MOM.indexOf(a.momento) - ORDINE_MOM.indexOf(b.momento));
+  for (const p of list) {
+    const seen = new Set();
+    for (const f of foodsOf(p.alimenti)) {
+      const k = fkey(f); if (seen.has(k)) continue; seen.add(k);
+      let e = m.get(k);
+      if (!e) { e = {k, names: {}, count: 0, pasti: [], first: p.data, last: p.data, g: {si: 0, ni: 0, no: 0}, lastG: ''}; m.set(k, e); }
+      e.names[f] = (e.names[f] || 0) + 1; e.count++; e.pasti.push(p); e.last = p.data;
+      if (p.gradimento) { e.g[p.gradimento]++; e.lastG = p.gradimento; }
+    }
+  }
+  m.forEach(e => { e.name = Object.entries(e.names).sort((a, b) => b[1] - a[1])[0][0]; });
+  _fi = m; _fiSig = sig; return m;
+}
+const colorsOfFood = f => Object.keys(COL_RX).filter(c => COL_RX[c].test(f));
+function colorsOfPasti(pasti) {
+  const out = {}; Object.keys(COLORI).forEach(c => out[c] = new Map());
+  for (const p of pasti) for (const f of foodsOf(p.alimenti)) for (const c of colorsOfFood(f)) { const k = fkey(f); const e = out[c].get(k) || {name: f, pasti: []}; e.pasti.push(p); out[c].set(k, e); }
+  return out;
+}
+function seasonList(nome) {
+  const r = S.riferimenti.find(x => x.tipo === 'stagione' && x.stagione === nome);
+  if (!r) return null;
+  const words = new Set();
+  (r.sezioni || []).forEach(s => (s.voci || []).forEach(v => v.toLowerCase().replace(/[^a-zà-ù ]/g, ' ').split(/\s+/).filter(w => w.length >= 4 && !['patate', 'stagione'].includes(w) || w === 'patate').forEach(w => words.add(stemW(w)))));
+  return words;
+}
+function stagioneDi(d) { return stagioneNow(parse(d)); }
+const isProduce = f => PRODUCE_RX.test(f);
+function inSeason(f, d) {
+  const l = seasonList(stagioneDi(d)); if (!l) return null;
+  return f.split(' ').some(w => w.length >= 4 && l.has(stemW(w)));
+}
+
+/* ---- avvisi / allergeni sui pasti ---- */
+function avvisiPasto(p) {
+  const r = analizza(p.alimenti || '', p.prot || [], mesiAt(p.data));
+  return {evita: r.evita, multi: (p.prot || []).length > 1, allergeni: r.allergeni};
+}
+function pastoHasAll(p, k) {
+  const t = (p.alimenti || '').toLowerCase().replace(ALL_ESCLUDI, ' '), w = tokens(t);
+  return ALL_KW[k].some(kw => match(t, w, kw));
+}
+
+/* ---- chart helpers ---- */
+const kpiBox = (v, l) => `<div class="kbox"><div class="kv">${v}</div><div class="muted small">${l}</div></div>`;
+function barsH(items, stat) {
+  if (!items.length) return '<div class="muted">Nessun dato nel periodo.</div>';
+  const max = Math.max(1, ...items.map(i => i.v));
+  return items.map(i => `<div class="brow tapc ${ui.drill && ui.drill.k === i.k ? 'sel' : ''}" data-a="drill" data-s="${stat}" data-v="${esc(i.k)}"><span class="bl">${esc(i.l)}</span><div class="bt"><i style="width:${Math.max(2, Math.round(i.v / max * 100))}%;${i.c ? 'background:' + i.c : ''}"></i></div><b>${i.t ?? i.v}</b></div>`).join('');
+}
+function colsV(items, stat) {
+  if (!items.length) return '<div class="muted">Nessun dato nel periodo.</div>';
+  const max = Math.max(1, ...items.map(i => i.v));
+  return `<div class="cols">` + items.map(i => `<div class="col tapc ${ui.drill && ui.drill.k === i.k ? 'sel' : ''}" data-a="drill" data-s="${stat}" data-v="${esc(i.k)}"><b class="cv">${i.t ?? i.v}</b><div class="cb"><i style="height:${Math.max(i.v ? 4 : 0, Math.round(i.v / max * 100))}%"></i></div><span class="cl">${esc(i.l)}</span></div>`).join('') + `</div>`;
+}
+function spark(vals) {
+  if (!vals || vals.length < 2) return '';
+  const max = Math.max(1, ...vals), w = 90, h = 26, st = w / (vals.length - 1);
+  const pts = vals.map((v, i) => `${(i * st).toFixed(1)},${(h - 2 - v / max * (h - 4)).toFixed(1)}`).join(' ');
+  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polyline fill="none" stroke="#5b8f6b" stroke-width="2" stroke-linejoin="round" points="${pts}"/></svg>`;
+}
+const chipsFood = (list, stat) => `<div class="chips" style="margin:6px 0">` + list.map(e => `<button class="chip" data-a="drill" data-s="${stat}" data-v="f:${esc(e.k)}">${esc(e.name)}${e.count ? ' · ' + e.count : ''}</button>`).join('') + `</div>`;
+const weekCols = (fn, stat, weeks) => colsV((weeks || weeksInPeriod(12)).map(w => ({k: 'w:' + w, l: fmtS(w), v: fn(w)})), stat);
+const pastiWeek = w => S.pasti.filter(p => p.data >= w && p.data <= addDays(w, 6));
+const nodata = '<div class="card muted">Servono alcuni pasti registrati per vedere questa statistica.</div>';
+
+/* ---- drill condivisi ---- */
+function drillFood(k) {
+  const e = foodIndex().get(k); if (!e) return null;
+  const g = e.g, ngr = g.si + g.ni + g.no;
+  return {titolo: e.name[0].toUpperCase() + e.name.slice(1), pasti: e.pasti, html: `<div class="muted small">Provato la prima volta il ${fmtLong(e.first)} · ultima volta il ${fmtLong(e.last)} · ${e.count} ${e.count === 1 ? 'volta' : 'volte'}${ngr ? `<br>Com'è andata: 😋 ${g.si} · 😐 ${g.ni} · 😕 ${g.no}` : ''}</div>`};
+}
+function drillWeekPasti(w, extra = '') { return {titolo: `Settimana ${fmt(w)} – ${fmt(addDays(w, 6))}`, pasti: pastiWeek(w), sintomi: S.sintomi.filter(s => s.data >= w && s.data <= addDays(w, 6)), html: extra}; }
+function drillDay(d) {
+  const g = S.giorni.find(x => x.id === d);
+  return {titolo: fmt(d), pasti: S.pasti.filter(p => p.data === d), sintomi: S.sintomi.filter(s => s.data === d), html: `<div class="muted small">${g ? `💧 ${g.acqua || 0} ml · 🍼 ${g.latte || 0} poppate` : 'Nessun dato di acqua/latte'} · <a href="#" data-a="vaiGiorno" data-v="${d}">apri il giorno</a></div>`};
+}
+
+/* ---- DEFINIZIONI ---- */
+const STATS = [
+  {id:'pasti', g:'Panoramica', ico:'🍽️', t:'Pasti registrati',
+   kpi: () => String(pP().length), sub: () => `${(pP().length / periodoDays()).toFixed(1)} al giorno`,
+   spark: () => weeksInPeriod(8).map(w => pastiWeek(w).length),
+   det: () => {
+     const ps = pP(); if (!ps.length) return nodata;
+     const dowC = DOW.map((l, i) => ({k: 'd:' + i, l, v: ps.filter(p => dowOf(p.data) === i).length}));
+     const fe = ps.filter(p => dowOf(p.data) >= 5).length;
+     return `<h2>Per settimana</h2>${weekCols(w => pastiWeek(w).length, 'pasti')}<h2>Per giorno della settimana</h2>${colsV(dowC, 'pasti')}
+       <div class="row wrap" style="margin-top:8px"><button class="soft small" data-a="drill" data-s="pasti" data-v="we">Weekend: ${fe} (${pct(fe, ps.length)}%)</button><button class="soft small" data-a="drill" data-s="pasti" data-v="fe">Feriali: ${ps.length - fe}</button><button class="ghost small" data-a="drill" data-s="pasti" data-v="all">Tutti i pasti</button></div>`;
+   },
+   drill: k => k.startsWith('w:') ? drillWeekPasti(k.slice(2)) : k.startsWith('d:') ? {titolo: 'Pasti del ' + DOW[+k.slice(2)], pasti: pP().filter(p => dowOf(p.data) === +k.slice(2))}
+     : k === 'we' ? {titolo: 'Pasti nel weekend', pasti: pP().filter(p => dowOf(p.data) >= 5)} : k === 'fe' ? {titolo: 'Pasti nei giorni feriali', pasti: pP().filter(p => dowOf(p.data) < 5)} : {titolo: 'Tutti i pasti del periodo', pasti: pP()}},
+
+  {id:'giorni', g:'Panoramica', ico:'🗓️', t:'Calendario dei giorni',
+   kpi: () => { const ds = new Set(pP().map(p => p.data)); return `${ds.size}/${periodoDays()}`; }, sub: () => 'giorni con almeno un pasto',
+   det: () => {
+     const ds = {}; S.pasti.forEach(p => ds[p.data] = (ds[p.data] || 0) + 1);
+     const weeks = weeksInPeriod(13);
+     let streak = 0, d = today(); if (!ds[d]) d = addDays(d, -1); while (ds[d]) { streak++; d = addDays(d, -1); }
+     let h = `<div class="kgrid">${kpiBox(streak, 'giorni di fila')}${kpiBox(new Set(pP().map(p => p.data)).size, 'giorni con pasti')}${kpiBox(Math.max(0, periodoDays() - new Set(pP().map(p => p.data)).size), 'senza registrazioni')}</div>`;
+     h += `<div class="heat"><div class="hh">${DOW.map(x => `<span>${x[0]}</span>`).join('')}</div>`;
+     weeks.forEach(w => { h += `<div class="hr">` + [0, 1, 2, 3, 4, 5, 6].map(i => { const dd = addDays(w, i), n = ds[dd] || 0, fut = dd > today(), out = !inPer(dd); return `<button class="hc h${Math.min(4, n)} ${fut || out ? 'dim' : ''}" ${fut ? 'disabled' : ''} data-a="drill" data-s="giorni" data-v="d:${dd}" title="${fmt(dd)}">${parse(dd).getDate()}</button>`; }).join('') + `</div>`; });
+     return h + `</div><div class="muted small">Più scuro = più pasti registrati. Tocca un giorno per vederne il dettaglio.</div>`;
+   },
+   drill: k => k.startsWith('d:') ? drillDay(k.slice(2)) : null},
+
+  {id:'settimane', g:'Panoramica', ico:'⚖️', t:'Questa settimana vs scorsa',
+   kpi: () => { const a = pastiWeek(mondayOf(today())).length, b = pastiWeek(addDays(mondayOf(today()), -7)).length; return `${a} vs ${b}`; }, sub: () => 'pasti registrati',
+   det: () => {
+     const w1 = mondayOf(today()), w0 = addDays(w1, -7);
+     const m = w => { const ps = pastiWeek(w), fi = foodIndex(); const foods = new Set(); ps.forEach(p => foodsOf(p.alimenti).forEach(f => foods.add(fkey(f)))); const nuovi = [...fi.values()].filter(e => e.first >= w && e.first <= addDays(w, 6)).length;
+       const gg = S.giorni.filter(x => x.id >= w && x.id <= addDays(w, 6) && x.acqua); return {
+       'Pasti': ps.length, 'Giorni con pasti': new Set(ps.map(p => p.data)).size, 'Alimenti diversi': foods.size, 'Alimenti nuovi': nuovi,
+       'Pasti a tavola con noi': ps.filter(p => p.tavola).length, 'Sintomi segnalati': S.sintomi.filter(s => s.data >= w && s.data <= addDays(w, 6)).length,
+       'Acqua media (ml/giorno)': gg.length ? Math.round(gg.reduce((s, x) => s + (x.acqua || 0), 0) / gg.length) : 0, ...Object.fromEntries(PROT.map(k => [PROT_LBL[k], ps.filter(p => (p.prot || []).includes(k)).length]))}; };
+     const a = m(w1), b = m(w0);
+     let h = `<table class="tbl"><tr><th></th><th>Scorsa</th><th>Questa</th><th></th></tr>` + Object.keys(a).map(k => { const d = a[k] - b[k]; return `<tr><td>${k}</td><td>${b[k]}</td><td><b>${a[k]}</b></td><td class="${d > 0 ? 'up' : d < 0 ? 'dn' : ''}">${d > 0 ? '▲ ' + d : d < 0 ? '▼ ' + (-d) : '='}</td></tr>`; }).join('') + `</table>`;
+     return h + `<div class="row" style="margin-top:10px"><button class="soft grow" data-a="drill" data-s="settimane" data-v="cw">Pasti di questa settimana</button><button class="soft grow" data-a="drill" data-s="settimane" data-v="pw">Pasti della scorsa</button></div>`;
+   },
+   drill: k => k === 'cw' ? drillWeekPasti(mondayOf(today())) : drillWeekPasti(addDays(mondayOf(today()), -7))},
+
+  {id:'percorso', g:'Panoramica', ico:'🌱', t:'Il percorso dello svezzamento',
+   kpi: () => { const f = firstDate(); return f ? String(Math.round((parse(today()) - parse(f)) / 864e5) + 1) : '–'; }, sub: () => { const f = firstDate(); return f ? `giorni dal primo pasto (${fmtS(f)})` : 'nessun pasto ancora'; },
+   det: () => {
+     if (!S.pasti.length) return nodata;
+     const ms = [];
+     const ps = [...S.pasti].sort((a, b) => a.data.localeCompare(b.data));
+     ms.push({id: 'first', l: 'Primo pasto registrato', p: ps[0]});
+     PROT.forEach(k => { const p = ps.find(x => (x.prot || []).includes(k)); if (p) ms.push({id: 'prot:' + k, l: `Prima volta: ${PROT_LBL[k].toLowerCase()}`, p}); });
+     [['solida', 'Prima consistenza più solida'], ['pezzettini', 'Primi pezzettini']].forEach(([c, l]) => { const p = ps.find(x => x.consistenza === c); if (p) ms.push({id: 'cons:' + c, l, p}); });
+     const fr = ps.find(x => (x.comp || []).includes('frutta')); if (fr) ms.push({id: 'frutta', l: 'Prima frutta', p: fr});
+     const tv = ps.filter(x => x.tavola); if (tv.length) ms.push({id: 'tavola', l: 'Primo pasto a tavola con la famiglia', p: tv[0]});
+     S.allergeni.filter(a => a.data).sort((a, b) => a.data.localeCompare(b.data)).forEach(a => ms.push({id: 'all:' + a.id, l: `Allergene introdotto: ${ALLERGENI[a.id]}`, d: a.data}));
+     ms.sort((a, b) => (a.p ? a.p.data : a.d).localeCompare(b.p ? b.p.data : b.d));
+     const e = eta(imp().nascita), t = tappaCorrente(e.m);
+     return `<div class="card"><b>Oggi: ${e.m} mesi e ${e.d} giorni</b><div class="muted small">Tappa: ${esc(t.titolo)}</div></div><h2>Tappe raggiunte</h2>` +
+       ms.map(m => `<div class="card tap" data-a="drill" data-s="percorso" data-v="${esc(m.id)}"><div class="row between"><b>${esc(m.l)}</b><span class="muted small">${fmt(m.p ? m.p.data : m.d)}</span></div></div>`).join('');
+   },
+   drill: k => {
+     if (k === 'first') return {titolo: 'Primo pasto', pasti: [[...S.pasti].sort((a, b) => a.data.localeCompare(b.data))[0]]};
+     if (k.startsWith('prot:')) { const x = k.slice(5); const ps = S.pasti.filter(p => (p.prot || []).includes(x)).sort((a, b) => a.data.localeCompare(b.data)); return {titolo: `Pasti con ${PROT_LBL[x].toLowerCase()} (dal primo)`, pasti: ps}; }
+     if (k.startsWith('cons:')) return {titolo: 'Pasti con questa consistenza', pasti: S.pasti.filter(p => p.consistenza === k.slice(5)).sort((a, b) => a.data.localeCompare(b.data))};
+     if (k === 'frutta') return {titolo: 'Pasti con frutta', pasti: S.pasti.filter(p => (p.comp || []).includes('frutta')).sort((a, b) => a.data.localeCompare(b.data))};
+     if (k === 'tavola') return {titolo: 'Pasti a tavola con la famiglia', pasti: S.pasti.filter(p => p.tavola).sort((a, b) => a.data.localeCompare(b.data))};
+     if (k.startsWith('all:')) return drillAllergene(k.slice(4));
+     return null;
+   }},
+
+  {id:'aderenza', g:'Rispetto delle regole', ico:'✅', t:'Regole della settimana',
+   kpi: () => { const r = regoleSett(ui.sw); return `${r.filter(x => x.ok === true).length}/${r.length}`; }, sub: () => 'regole rispettate nella settimana scelta',
+   det: () => {
+     const w = ui.sw, rs = regoleSett(w);
+     let h = `<div class="dayhead"><button class="ghost small" data-a="swk" data-v="-7">‹</button><b>${fmt(w)} – ${fmt(addDays(w, 6))}</b><button class="ghost small" data-a="swk" data-v="7">›</button></div>`;
+     h += rs.map(r => `<div class="card tap" data-a="drill" data-s="aderenza" data-v="r:${r.id}"><div class="row between"><b>${r.ok === true ? '✅' : r.ok === false ? '⚠️' : '⏳'} ${esc(r.t)}</b><span class="muted small">${esc(r.v)}</span></div><div class="muted small">${esc(r.d)}</div></div>`).join('');
+     h += `<div class="muted small">Sono promemoria costruiti sugli appunti: la settimana in corso può risultare incompleta. Le soglie di tavola e colori sono scelte dell'app.</div>`;
+     return h;
+   },
+   drill: k => { if (!k.startsWith('r:')) return null; const r = regoleSett(ui.sw).find(x => x.id === k.slice(2)); return r ? {titolo: r.t, pasti: r.pasti || [], html: `<div class="muted small">${esc(r.d)} · ${esc(r.v)}</div>`} : null; }},
+
+  {id:'freqsett', g:'Rispetto delle regole', ico:'📈', t:'Frequenze nel tempo',
+   kpi: () => { const ws = weeksInPeriod(12).filter(w => w < mondayOf(today())); if (!ws.length) return '–'; let ok = 0, tot = 0; ws.forEach(w => PROT.forEach(k => { const c = pastiWeek(w).filter(p => (p.prot || []).includes(k)).length, [mn, mx] = getFreq()[k]; tot++; if (c >= mn && c <= mx) ok++; })); return pct(ok, tot) + '%'; }, sub: () => 'obiettivi centrati nelle settimane concluse',
+   det: () => {
+     const ws = weeksInPeriod(10), F = getFreq();
+     if (!S.pasti.length) return nodata;
+     let h = `<div class="tblw"><table class="tbl mini"><tr><th></th>${ws.map(w => `<th>${fmtS(w)}</th>`).join('')}</tr>`;
+     PROT.forEach(k => { h += `<tr><td>${PROT_ICO[k]}</td>` + ws.map(w => { const c = pastiWeek(w).filter(p => (p.prot || []).includes(k)).length, [mn, mx] = F[k], cur = w === mondayOf(today()); const cls = c > mx ? 'over' : c >= mn ? 'okc' : cur ? 'wip' : 'under'; return `<td><button class="cell ${cls}" data-a="drill" data-s="freqsett" data-v="c:${w}:${k}">${c}</button></td>`; }).join('') + `</tr>`; });
+     return h + `</table></div><div class="muted small">🟩 nel range · 🟧 sotto · 🟥 sopra · 🟦 settimana in corso. Obiettivi: ${PROT.map(k => `${PROT_LBL[k].toLowerCase()} ${F[k][0] === F[k][1] ? F[k][0] : F[k][0] + '-' + F[k][1]}`).join(', ')} (modificabili in Altro › Impostazioni).</div>`;
+   },
+   drill: k => { const [, w, p] = k.split(':'); return k.startsWith('c:') ? {titolo: `${PROT_LBL[p]} · settimana del ${fmt(w)}`, pasti: pastiWeek(w).filter(x => (x.prot || []).includes(p))} : null; }},
+
+  {id:'proteine', g:'Rispetto delle regole', ico:'🍗', t:'Fonti proteiche',
+   kpi: () => String(pP().filter(p => (p.prot || []).length).length), sub: () => 'pasti con fonte proteica indicata',
+   det: () => {
+     const ps = pP(); if (!ps.length) return nodata;
+     const items = PROT.map(k => ({k: 'p:' + k, l: PROT_ICO[k] + ' ' + PROT_LBL[k], v: ps.filter(p => (p.prot || []).includes(k)).length}));
+     const main = ps.filter(isMain), senza = main.filter(p => !(p.prot || []).length);
+     return `<h2>Pasti per fonte</h2>${barsH(items, 'proteine')}<h2>Pranzi e cene senza fonte proteica</h2>${barsH([{k: 'p:none', l: 'Senza proteina', v: senza.length, t: `${senza.length} su ${main.length}`, c: '#e8a87c'}], 'proteine')}<div class="muted small">Un pasto con due fonti proteiche conta in entrambe.</div>`;
+   },
+   drill: k => k === 'p:none' ? {titolo: 'Pranzi e cene senza fonte proteica', pasti: pP().filter(p => isMain(p) && !(p.prot || []).length)} : k.startsWith('p:') ? {titolo: PROT_LBL[k.slice(2)], pasti: pP().filter(p => (p.prot || []).includes(k.slice(2)))} : null},
+
+  {id:'piatto', g:'Rispetto delle regole', ico:'🥗', t:'Composizione del piatto',
+   kpi: () => { const m = pP().filter(isMain); if (!m.length) return '–'; return pct(m.filter(completo).length, m.length) + '%'; }, sub: () => 'pranzi e cene con carboidrati + verdura + proteine',
+   det: () => {
+     const m = pP().filter(isMain); if (!m.length) return nodata;
+     const has = {carbo: p => (p.comp || []).includes('carbo'), verdura: p => (p.comp || []).includes('verdura'), prot: p => (p.prot || []).length > 0, frutta: p => (p.comp || []).includes('frutta')};
+     const lbl = {carbo: '🍝 Carboidrati', verdura: '🥦 Verdura', prot: '🍗 Proteine', frutta: '🍎 Frutta'};
+     return `<div class="muted small">Dagli appunti: ¼ proteine, ¼ frutta e verdura, ½ carboidrati. Percentuale di pranzi e cene (${m.length}) in cui il componente c'è; tocca una barra per vedere i pasti dove manca.</div><h2>Presenza dei componenti</h2>` +
+       barsH(Object.keys(has).map(k => ({k: 'no:' + k, l: lbl[k], v: m.filter(has[k]).length, t: pct(m.filter(has[k]).length, m.length) + '%'})), 'piatto') +
+       barsH([{k: 'ok', l: '✅ Piatto completo', v: m.filter(completo).length, t: pct(m.filter(completo).length, m.length) + '%'}, {k: 'no:any', l: '➖ Piatto incompleto', v: m.filter(p => !completo(p)).length, t: pct(m.filter(p => !completo(p)).length, m.length) + '%', c: '#e8a87c'}], 'piatto');
+   },
+   drill: k => { const m = pP().filter(isMain); if (k === 'ok') return {titolo: 'Piatti completi', pasti: m.filter(completo)}; if (k === 'no:any') return {titolo: 'Piatti incompleti', pasti: m.filter(p => !completo(p))};
+     const f = {carbo: p => (p.comp || []).includes('carbo'), verdura: p => (p.comp || []).includes('verdura'), prot: p => (p.prot || []).length > 0, frutta: p => (p.comp || []).includes('frutta')}[k.slice(3)]; return f ? {titolo: `Pranzi e cene senza ${k.slice(3) === 'prot' ? 'proteine' : k.slice(3)}`, pasti: m.filter(p => !f(p))} : null; }},
+
+  {id:'avvisi', g:'Rispetto delle regole', ico:'⚠️', t:'Avvisi sui pasti',
+   kpi: () => String(pP().filter(p => { const a = avvisiPasto(p); return a.evita.length || a.multi; }).length), sub: () => 'pasti con un avviso',
+   det: () => {
+     const ps = pP(); if (!ps.length) return nodata;
+     const msgs = {}; let multi = 0;
+     ps.forEach(p => { const a = avvisiPasto(p); a.evita.forEach(m => msgs[m] = (msgs[m] || 0) + 1); if (a.multi) multi++; });
+     const items = [{k: 'multi', l: 'Più fonti proteiche insieme', v: multi}, ...Object.entries(msgs).sort((a, b) => b[1] - a[1]).map(([m, n]) => ({k: 'e:' + m, l: m.split(':')[0], v: n}))].filter(i => i.v);
+     return items.length ? `<h2>Che cosa è comparso</h2>${barsH(items, 'avvisi')}<div class="muted small">Gli avvisi sono solo promemoria: partono dalle parole scritte nei pasti.</div>` : `<div class="card">Nessun avviso nel periodo. 👏</div>`;
+   },
+   drill: k => k === 'multi' ? {titolo: 'Pasti con più fonti proteiche', pasti: pP().filter(p => avvisiPasto(p).multi)} : k.startsWith('e:') ? {titolo: k.slice(2), pasti: pP().filter(p => avvisiPasto(p).evita.includes(k.slice(2)))} : null},
+
+  {id:'tavola', g:'Rispetto delle regole', ico:'👨‍👩‍👦', t:'Pasti a tavola con la famiglia',
+   kpi: () => { const ps = pP(); return ps.length ? pct(ps.filter(p => p.tavola).length, ps.length) + '%' : '–'; }, sub: () => 'dei pasti condivisi con un familiare',
+   det: () => {
+     const ps = pP(); if (!ps.length) return nodata;
+     const byM = ORDINE_MOM.map(m => { const l = ps.filter(p => p.momento === m); return {k: 'm:' + m, l: MOMENTI[m], v: pct(l.filter(p => p.tavola).length, l.length), t: l.length ? pct(l.filter(p => p.tavola).length, l.length) + '%' : '–'}; }).filter(x => ps.some(p => 'm:' + p.momento === x.k));
+     return `<h2>Per momento</h2>${barsH(byM, 'tavola')}<h2>Per settimana (%)</h2>${weekCols(w => { const l = pastiWeek(w); return pct(l.filter(p => p.tavola).length, l.length); }, 'tavola')}
+       <div class="row" style="margin-top:8px"><button class="soft grow" data-a="drill" data-s="tavola" data-v="si">Condivisi</button><button class="soft grow" data-a="drill" data-s="tavola" data-v="no">Non condivisi</button></div>`;
+   },
+   drill: k => k === 'si' ? {titolo: 'Pasti condivisi', pasti: pP().filter(p => p.tavola)} : k === 'no' ? {titolo: 'Pasti non condivisi', pasti: pP().filter(p => !p.tavola)} : k.startsWith('m:') ? {titolo: MOMENTI[k.slice(2)] + ' (periodo)', pasti: pP().filter(p => p.momento === k.slice(2))} : k.startsWith('w:') ? drillWeekPasti(k.slice(2)) : null},
+
+  {id:'alimenti', g:'Gusti e varietà', ico:'🥕', t:'Alimenti più frequenti',
+   kpi: () => { const m = new Map(); pP().forEach(p => foodsOf(p.alimenti).forEach(f => m.set(fkey(f), 1))); return String(m.size); }, sub: () => 'alimenti diversi nel periodo',
+   det: () => {
+     const ps = pP(); if (!ps.length) return nodata;
+     const cnt = new Map(); ps.forEach(p => { const seen = new Set(); foodsOf(p.alimenti).forEach(f => { const k = fkey(f); if (seen.has(k)) return; seen.add(k); cnt.set(k, (cnt.get(k) || 0) + 1); }); });
+     const fi = foodIndex();
+     const top = [...cnt.entries()].sort((a, b) => b[1] - a[1]).slice(0, 15).map(([k, n]) => ({k: 'f:' + k, l: (fi.get(k) || {name: k}).name, v: n}));
+     return `<h2>I 15 più frequenti</h2>${barsH(top, 'alimenti')}<div class="muted small">Gli alimenti vengono letti dal testo dei pasti (separati da virgole, «e», «con»).</div>`;
+   },
+   drill: k => k.startsWith('f:') ? drillFood(k.slice(2)) : null},
+
+  {id:'nuovi', g:'Gusti e varietà', ico:'✨', t:'Alimenti nuovi provati',
+   kpi: () => String(foodIndex().size), sub: () => `alimenti provati in tutto · ${[...foodIndex().values()].filter(e => inPer(e.first)).length} nel periodo`,
+   spark: () => { const fi = [...foodIndex().values()]; let c = 0; return weeksInPeriod(10).map(w => c += fi.filter(e => e.first >= w && e.first <= addDays(w, 6)).length); },
+   det: () => {
+     const fi = [...foodIndex().values()]; if (!fi.length) return nodata;
+     const ws = weeksInPeriod(12);
+     const nuovi = fi.filter(e => inPer(e.first)).sort((a, b) => b.first.localeCompare(a.first));
+     return `<h2>Nuovi alimenti per settimana</h2>${colsV(ws.map(w => ({k: 'w:' + w, l: fmtS(w), v: fi.filter(e => e.first >= w && e.first <= addDays(w, 6)).length})), 'nuovi')}<h2>Provati di recente</h2>${nuovi.length ? chipsFood(nuovi.slice(0, 40), 'nuovi') : '<div class="muted">Nessuno nel periodo.</div>'}`;
+   },
+   drill: k => { if (k.startsWith('f:')) return drillFood(k.slice(2)); if (!k.startsWith('w:')) return null; const w = k.slice(2), l = [...foodIndex().values()].filter(e => e.first >= w && e.first <= addDays(w, 6)); return {titolo: `Nuovi alimenti · settimana del ${fmt(w)}`, html: l.length ? chipsFood(l, 'nuovi') : '<div class="muted">Nessuno.</div>', pasti: l.flatMap(e => e.pasti.filter(p => p.data === e.first))}; }},
+
+  {id:'riprove', g:'Gusti e varietà', ico:'🔁', t:'Da riproporre',
+   kpi: () => String(daRiproporre().length), sub: () => 'alimenti provati poco o poco graditi',
+   det: () => {
+     const l = daRiproporre(); if (!S.pasti.length) return nodata;
+     return `<div class="muted small">Dagli appunti: i cibi non sono «nuovi» se li ha già provati, e non bisogna insistere né obbligare. Qui trovi gli alimenti provati meno di 3 volte oppure con l'ultimo esito «poco».</div>` + (l.length ? l.map(e => `<div class="card tap" data-a="drill" data-s="riprove" data-v="f:${esc(e.k)}"><div class="row between"><b>${esc(e.name)}</b><span class="muted small">${e.count}× · ultimo ${GRAD[e.lastG] ? GRAD[e.lastG].slice(0, 2) : '–'} · ${fmtS(e.last)}</span></div></div>`).join('') : '<div class="card">Niente da riproporre per ora.</div>');
+   },
+   drill: k => k.startsWith('f:') ? drillFood(k.slice(2)) : null},
+
+  {id:'diversita', g:'Gusti e varietà', ico:'🌈', t:'Varietà settimanale',
+   kpi: () => { const f = new Set(); pastiWeek(mondayOf(today())).forEach(p => foodsOf(p.alimenti).forEach(x => f.add(fkey(x)))); return String(f.size); }, sub: () => 'alimenti diversi questa settimana',
+   spark: () => weeksInPeriod(8).map(w => { const f = new Set(); pastiWeek(w).forEach(p => foodsOf(p.alimenti).forEach(x => f.add(fkey(x)))); return f.size; }),
+   det: () => {
+     if (!S.pasti.length) return nodata;
+     return `<h2>Alimenti diversi per settimana</h2>${weekCols(w => { const f = new Set(); pastiWeek(w).forEach(p => foodsOf(p.alimenti).forEach(x => f.add(fkey(x)))); return f.size; }, 'diversita')}`;
+   },
+   drill: k => { if (k.startsWith('f:')) return drillFood(k.slice(2)); if (!k.startsWith('w:')) return null; const w = k.slice(2), m = new Map(); const fi = foodIndex(); pastiWeek(w).forEach(p => foodsOf(p.alimenti).forEach(f => { const e = fi.get(fkey(f)); if (e) m.set(e.k, e); })); return {titolo: `Alimenti della settimana del ${fmt(w)}`, html: chipsFood([...m.values()].map(e => ({k: e.k, name: e.name})), 'diversita'), pasti: pastiWeek(w)}; }},
+
+  {id:'colori', g:'Gusti e varietà', ico:'🎨', t:'I 5 colori',
+   kpi: () => { const c = colorsOfPasti(pastiWeek(ui.sw)); return `${Object.keys(c).filter(k => c[k].size).length}/5`; }, sub: () => 'colori nella settimana scelta',
+   det: () => {
+     const w = ui.sw, c = colorsOfPasti(pastiWeek(w));
+     let h = `<div class="dayhead"><button class="ghost small" data-a="swk" data-v="-7">‹</button><b>${fmt(w)} – ${fmt(addDays(w, 6))}</b><button class="ghost small" data-a="swk" data-v="7">›</button></div>`;
+     h += barsH(Object.keys(COLORI).map(k => ({k: 'c:' + k, l: COLORI[k][0] + ' ' + COLORI[k][1], v: c[k].size, t: c[k].size + (c[k].size === 1 ? ' alimento' : ' alimenti')})), 'colori');
+     h += `<h2>Colori per settimana</h2>` + weekCols(wk => { const x = colorsOfPasti(pastiWeek(wk)); return Object.keys(x).filter(k => x[k].size).length; }, 'colori');
+     return h + `<div class="muted small">Dagli appunti: seguire i 5 colori. I colori sono assegnati in base al nome dell'alimento (ad es. carote → giallo/arancio).</div>`;
+   },
+   drill: k => { if (k.startsWith('w:')) { const w = k.slice(2), c = colorsOfPasti(pastiWeek(w)); return {titolo: `Colori · settimana del ${fmt(w)}`, html: Object.keys(c).map(x => `<div class="muted small"><b>${COLORI[x][0]} ${COLORI[x][1]}:</b> ${[...c[x].values()].map(e => esc(e.name)).join(', ') || '–'}</div>`).join('')}; }
+     if (!k.startsWith('c:')) return null; const x = k.slice(2), e = colorsOfPasti(pastiWeek(ui.sw))[x]; const ps = []; e.forEach(v => v.pasti.forEach(p => { if (!ps.includes(p)) ps.push(p); })); return {titolo: `${COLORI[x][0]} ${COLORI[x][1]} · alimenti`, html: `<div class="muted small">${[...e.values()].map(v => esc(v.name)).join(', ') || 'Nessun alimento di questo colore nella settimana.'}</div>`, pasti: ps}; }},
+
+  {id:'stagione', g:'Gusti e varietà', ico:'🍂', t:'Frutta e verdura di stagione',
+   kpi: () => { const r = stagStat(); return r.tot ? pct(r.inn, r.tot) + '%' : '–'; }, sub: () => stagStat().tot ? 'di stagione (autunno e inverno)' : 'importa le liste di stagione',
+   det: () => {
+     if (!S.riferimenti.some(r => r.tipo === 'stagione')) return `<div class="card">Servono le liste di stagione: vai in <b>Altro › Importa dati iniziali</b>.</div>`;
+     const r = stagStat(); if (!r.tot) return `<div class="card muted">Nel periodo non ci sono frutta/verdura riconosciute in autunno o inverno. Le liste dei documenti coprono solo queste due stagioni.</div>`;
+     return `<h2>Frutta e verdura nel periodo</h2>${barsH([{k: 's:in', l: '🍂 Di stagione', v: r.inn, t: `${r.inn} (${pct(r.inn, r.tot)}%)`}, {k: 's:out', l: '🌍 Fuori stagione', v: r.tot - r.inn, t: `${r.tot - r.inn}`, c: '#e8a87c'}], 'stagione')}<div class="muted small">Contano solo gli alimenti riconosciuti come frutta o verdura nelle stagioni presenti nei documenti (autunno e inverno).</div>`;
+   },
+   drill: k => { const r = stagStat(); if (k.startsWith('f:')) return drillFood(k.slice(2)); const l = k === 's:in' ? r.listIn : r.listOut; return {titolo: k === 's:in' ? 'Di stagione' : 'Fuori stagione', html: chipsFood(l, 'stagione'), pasti: l.flatMap(e => e.pasti.filter(p => inPer(p.data)))}; }},
+
+  {id:'gradimento', g:'Gusti e varietà', ico:'😋', t:'Gradimento',
+   kpi: () => { const l = pP().filter(p => p.gradimento); return l.length ? pct(l.filter(p => p.gradimento === 'si').length, l.length) + '%' : '–'; }, sub: () => 'pasti con esito «tanto»',
+   det: () => {
+     const l = pP().filter(p => p.gradimento); if (!l.length) return nodata;
+     const byM = ORDINE_MOM.map(m => { const x = l.filter(p => p.momento === m); return {k: 'm:' + m, l: MOMENTI[m], v: x.length ? Math.round(x.reduce((s, p) => s + GVAL[p.gradimento], 0) / x.length * 50) : 0, t: x.length ? (x.reduce((s, p) => s + GVAL[p.gradimento], 0) / x.length).toFixed(1) + '/2' : '–', n: x.length}; }).filter(x => x.n);
+     return `<h2>Com'è andata</h2>${barsH(Object.keys(GRAD).reverse().map(g => ({k: 'g:' + g, l: GRAD[g], v: l.filter(p => p.gradimento === g).length})), 'gradimento')}<h2>Per momento (media 0-2)</h2>${barsH(byM, 'gradimento')}<h2>Per settimana (media 0-2)</h2>${weekCols(w => { const x = pastiWeek(w).filter(p => p.gradimento); return x.length ? +(x.reduce((s, p) => s + GVAL[p.gradimento], 0) / x.length).toFixed(1) : 0; }, 'gradimento')}`;
+   },
+   drill: k => k.startsWith('g:') ? {titolo: 'Esito: ' + GRAD[k.slice(2)], pasti: pP().filter(p => p.gradimento === k.slice(2))} : k.startsWith('m:') ? {titolo: MOMENTI[k.slice(2)] + ' con esito', pasti: pP().filter(p => p.momento === k.slice(2) && p.gradimento)} : k.startsWith('w:') ? drillWeekPasti(k.slice(2)) : null},
+
+  {id:'consistenze', g:'Gusti e varietà', ico:'🥄', t:'Consistenze',
+   kpi: () => { const l = sorted(pP().filter(p => p.consistenza)); return l.length ? CONSIST[l[0].consistenza] : '–'; }, sub: () => 'ultima consistenza registrata',
+   det: () => {
+     const l = pP().filter(p => p.consistenza); if (!l.length) return nodata;
+     return `<h2>Quante volte</h2>${barsH(Object.keys(CONSIST).map(c => ({k: 'k:' + c, l: CONSIST[c], v: l.filter(p => p.consistenza === c).length})), 'consistenze')}<h2>Pasti «più solidi» per settimana (%)</h2>${weekCols(w => { const x = pastiWeek(w).filter(p => p.consistenza); return pct(x.filter(p => p.consistenza === 'solida' || p.consistenza === 'pezzettini').length, x.length); }, 'consistenze')}<div class="muted small">Dagli appunti: proporre consistenze diverse e farle evolvere; intorno ai 9 mesi dovrebbe gestire consistenze più solide.</div>`;
+   },
+   drill: k => k.startsWith('k:') ? {titolo: 'Consistenza: ' + CONSIST[k.slice(2)], pasti: pP().filter(p => p.consistenza === k.slice(2))} : k.startsWith('w:') ? drillWeekPasti(k.slice(2)) : null},
+
+  {id:'piatti', g:'Gusti e varietà', ico:'📖', t:'Ricettario: provati e da provare',
+   kpi: () => { const t = S.piatti.length; return t ? `${S.piatti.filter(piattoUsato).length}/${t}` : '–'; }, sub: () => 'piatti del ricettario già mangiati',
+   det: () => {
+     if (!S.piatti.length) return `<div class="card">Il ricettario è vuoto: importalo da <b>Altro › Importa dati iniziali</b>.</div>`;
+     const usati = S.piatti.filter(piattoUsato), nuovi = S.piatti.filter(p => !piattoUsato(p));
+     const byProt = PROT.map(k => ({k: 'u:' + k, l: PROT_ICO[k] + ' ' + PROT_LBL[k], v: S.piatti.filter(p => p.prot === k && piattoUsato(p)).length, t: `${S.piatti.filter(p => p.prot === k && piattoUsato(p)).length}/${S.piatti.filter(p => p.prot === k).length}`}));
+     const top = usati.map(p => ({k: 'p:' + p.id, l: p.nome, v: usoPiatto(p)})).sort((a, b) => b.v - a.v).slice(0, 8);
+     return `<div class="kgrid">${kpiBox(usati.length, 'già mangiati')}${kpiBox(nuovi.length, 'da provare')}${kpiBox(S.piatti.filter(p => p.piace).length, '⭐ preferiti')}</div><h2>Provati per fonte proteica</h2>${barsH(byProt, 'piatti')}<h2>I più cucinati</h2>${top.length ? barsH(top, 'piatti') : '<div class="muted">Registra un pasto con il nome del piatto (dal ricettario: «L\'ha mangiato») per vederlo qui.</div>'}
+       <div class="row" style="margin-top:8px"><button class="soft grow" data-a="drill" data-s="piatti" data-v="u:nuovi">Mostra i piatti da provare</button></div>`;
+   },
+   drill: k => { if (k.startsWith('p:')) { const p = S.piatti.find(x => x.id === k.slice(2)); return p ? {titolo: p.nome, html: listaPiatti([p]), pasti: S.pasti.filter(x => normName(x.alimenti || '').includes(normName(p.nome)))} : null; }
+     if (k === 'u:nuovi') return {titolo: 'Piatti ancora da provare', html: listaPiatti(S.piatti.filter(p => !piattoUsato(p)).sort((a, b) => (b.piace ? 1 : 0) - (a.piace ? 1 : 0)).slice(0, 40))};
+     if (k.startsWith('u:')) { const x = k.slice(2); return {titolo: `${PROT_LBL[x]}: piatti provati`, html: listaPiatti(S.piatti.filter(p => p.prot === x && piattoUsato(p)))}; } return null; }},
+
+  {id:'menu', g:'Gusti e varietà', ico:'🧾', t:'Menu pianificato vs mangiato',
+   kpi: () => { const r = menuStat(weeksInPeriod(8)); return r.tot ? pct(r.ok, r.tot) + '%' : '–'; }, sub: () => 'piatti pianificati poi registrati',
+   det: () => {
+     const ws = weeksInPeriod(10), r = menuStat(ws); if (!r.tot) return `<div class="card muted">Nessun piatto pianificato nelle settimane considerate. Compila il menu in Settimana › Menu.</div>`;
+     return `<h2>Per settimana (%)</h2>${colsV(ws.map(w => { const x = menuStat([w]); return {k: 'w:' + w, l: fmtS(w), v: x.tot ? pct(x.ok, x.tot) : 0, t: x.tot ? pct(x.ok, x.tot) + '%' : '–'}; }), 'menu')}<div class="muted small">Un piatto pianificato risulta «mangiato» se, nello stesso giorno e momento, c'è un pasto con quel nome o con la stessa fonte proteica.</div>`;
+   },
+   drill: k => { if (!k.startsWith('w:')) return null; const w = k.slice(2), x = menuStat([w]); return {titolo: `Menu · settimana del ${fmt(w)}`, html: x.righe.map(r => `<div class="check ${r.ok ? '' : ''}"><span class="grow">${r.ok ? '✅' : '⬜'} ${fmt(r.d)} · ${MOMENTI[r.m]}: ${esc(r.t)}</span></div>`).join('') || '<div class="muted">Nessun piatto pianificato.</div>'}; }},
+
+  {id:'momenti', g:'La giornata', ico:'⏰', t:'Momenti della giornata',
+   kpi: () => { const ps = pP(); if (!ps.length) return '–'; const best = ORDINE_MOM.map(m => [m, ps.filter(p => p.momento === m).length]).sort((a, b) => b[1] - a[1])[0]; return MOMENTI[best[0]]; }, sub: () => 'momento più registrato',
+   det: () => { const ps = pP(); if (!ps.length) return nodata; return barsH(ORDINE_MOM.map(m => ({k: 'm:' + m, l: MOMENTI[m], v: ps.filter(p => p.momento === m).length, t: `${ps.filter(p => p.momento === m).length} (${pct(ps.filter(p => p.momento === m).length, ps.length)}%)`})), 'momenti') + `<div class="muted small">Dagli appunti: verso 9-11 mesi 3-4 momenti di cibo; all'inizio basta anche un solo pasto.</div>`; },
+   drill: k => k.startsWith('m:') ? {titolo: MOMENTI[k.slice(2)], pasti: pP().filter(p => p.momento === k.slice(2))} : null},
+
+  {id:'orari', g:'La giornata', ico:'🕐', t:'Orari dei pasti',
+   kpi: () => { const l = pP().filter(p => p.ora); if (!l.length) return '–'; const m = Math.round(l.reduce((s, p) => s + oraMin(p.ora), 0) / l.length); return `${pad(Math.floor(m / 60))}:${pad(m % 60)}`; }, sub: () => `ora media (${pP().filter(p => p.ora).length} pasti con orario)`,
+   det: () => {
+     const l = pP().filter(p => p.ora); if (!l.length) return `<div class="card muted">L'orario si aggiunge quando registri un pasto (campo «Ora»).</div>`;
+     const B = [[0, 9, 'Fino alle 9'], [9, 12, '9-12'], [12, 15, '12-15'], [15, 18, '15-18'], [18, 21, '18-21'], [21, 24, 'Dopo le 21']];
+     return `<h2>Fasce orarie</h2>${colsV(B.map(([a, b, lb]) => ({k: 'h:' + a, l: lb, v: l.filter(p => { const h = Math.floor(oraMin(p.ora) / 60); return h >= a && h < b; }).length})), 'orari')}<h2>Ora media per momento</h2>${barsH(ORDINE_MOM.map(m => { const x = l.filter(p => p.momento === m); if (!x.length) return null; const mm = Math.round(x.reduce((s, p) => s + oraMin(p.ora), 0) / x.length); return {k: 'm:' + m, l: MOMENTI[m], v: mm, t: `${pad(Math.floor(mm / 60))}:${pad(mm % 60)}`}; }).filter(Boolean), 'orari')}`;
+   },
+   drill: k => { if (k.startsWith('m:')) return {titolo: MOMENTI[k.slice(2)] + ' con orario', pasti: pP().filter(p => p.ora && p.momento === k.slice(2))}; const a = +k.slice(2), b = {0: 9, 9: 12, 12: 15, 15: 18, 18: 21, 21: 24}[a]; return {titolo: `Pasti tra le ${a} e le ${b}`, pasti: pP().filter(p => { if (!p.ora) return false; const h = Math.floor(oraMin(p.ora) / 60); return h >= a && h < b; })}; }},
+
+  {id:'autori', g:'La giornata', ico:'👥', t:'Chi registra i pasti',
+   kpi: () => String(new Set(pP().map(p => p.autore || '?')).size), sub: () => 'persone che hanno registrato',
+   det: () => { const ps = pP(); if (!ps.length) return nodata; const a = {}; ps.forEach(p => { const k = p.autore || '(sconosciuto)'; a[k] = (a[k] || 0) + 1; }); return barsH(Object.entries(a).sort((x, y) => y[1] - x[1]).map(([k, n]) => ({k: 'a:' + k, l: k, v: n})), 'autori') + `<div class="muted small">Il nome viene dalla parte iniziale dell'email con cui si accede.</div>`; },
+   drill: k => k.startsWith('a:') ? {titolo: 'Pasti registrati da ' + k.slice(2), pasti: pP().filter(p => (p.autore || '(sconosciuto)') === k.slice(2))} : null},
+
+  {id:'acqua', g:'La giornata', ico:'💧', t:'Acqua',
+   kpi: () => { const l = giorniAcqua(); return l.length ? Math.round(l.reduce((s, g) => s + g.acqua, 0) / l.length) + ' ml' : '–'; }, sub: () => { const t = targetAcqua(); return t ? `media al giorno · obiettivo ${t} ml` : 'media al giorno'; },
+   spark: () => lastDays(10).map(d => (S.giorni.find(g => g.id === d) || {}).acqua || 0),
+   det: () => {
+     const t = targetAcqua(), ds = lastDays(ui.per === 7 ? 7 : 14);
+     const l = giorniAcqua(); if (!S.giorni.some(g => g.acqua)) return `<div class="card muted">Segna l'acqua nella scheda Oggi con i tasti +50 / +100 / +200 ml.</div>`;
+     return `<div class="kgrid">${kpiBox(t ? t + ' ml' : '–', 'obiettivo (appunti)')}${kpiBox(t ? pct(l.filter(g => g.acqua >= t).length, l.length) + '%' : '–', 'giorni in obiettivo')}</div><h2>Ultimi giorni (ml)</h2>${colsV(ds.map(d => ({k: 'd:' + d, l: fmtS(d), v: (S.giorni.find(g => g.id === d) || {}).acqua || 0})), 'acqua')}<div class="muted small">Dagli appunti: 800 ml da 6 a 12 mesi, 1200 ml da 1 a 3 anni; all'inizio proporre acqua durante il pasto.</div>`;
+   },
+   drill: k => k.startsWith('d:') ? drillDay(k.slice(2)) : null},
+
+  {id:'latte', g:'La giornata', ico:'🍼', t:'Latte e pasti',
+   kpi: () => { const l = S.giorni.filter(g => inPer(g.id) && g.latte != null && g.latte !== ''); return l.length ? (l.reduce((s, g) => s + (+g.latte || 0), 0) / l.length).toFixed(1) : '–'; }, sub: () => 'poppate/biberon al giorno (media)',
+   det: () => {
+     if (!S.giorni.some(g => g.latte)) return `<div class="card muted">Segna le poppate o i biberon nella scheda Oggi.</div>`;
+     const ds = lastDays(ui.per === 7 ? 7 : 14);
+     return `<h2>Poppate / biberon al giorno</h2>${colsV(ds.map(d => ({k: 'd:' + d, l: fmtS(d), v: +((S.giorni.find(g => g.id === d) || {}).latte || 0)})), 'latte')}<h2>Pasti al giorno</h2>${colsV(ds.map(d => ({k: 'd:' + d, l: fmtS(d), v: S.pasti.filter(p => p.data === d).length})), 'latte')}<div class="muted small">Dagli appunti: se ha ancora fame c'è il latte, soprattutto all'inizio; quando riduce il latte l'acqua va proposta anche fuori dai pasti.</div>`;
+   },
+   drill: k => k.startsWith('d:') ? drillDay(k.slice(2)) : null},
+
+  {id:'allergeni', g:'Salute', ico:'🥜', t:'Allergeni',
+   kpi: () => `${S.allergeni.filter(a => a.data).length}/${Object.keys(ALLERGENI).length}`, sub: () => 'allergeni introdotti',
+   det: () => {
+     const intro = S.allergeni.filter(a => a.data).sort((a, b) => a.data.localeCompare(b.data)), non = Object.keys(ALLERGENI).filter(k => !allIntro(k));
+     const last = intro[intro.length - 1];
+     let h = `<div class="kgrid">${kpiBox(intro.length, 'introdotti')}${kpiBox(non.length, 'da introdurre')}${kpiBox(last ? Math.round((parse(today()) - parse(last.data)) / 864e5) + ' g' : '–', 'dall\'ultimo')}</div>`;
+     h += `<h2>Cronologia</h2>` + (intro.length ? intro.map(a => { const [lbl, c] = REAZ[a.reazione] || REAZ.da_valutare; return `<div class="card tap" data-a="drill" data-s="allergeni" data-v="a:${a.id}"><div class="row between"><b>${ALLERGENI[a.id]}</b><span class="tag ${tagClass(c)}">${lbl}</span></div><div class="muted small">dal ${fmtLong(a.data)} · ${Math.round((parse(today()) - parse(a.data)) / 864e5)} giorni fa</div></div>`; }).join('') : '<div class="muted">Nessun allergene introdotto.</div>');
+     if (non.length) h += `<h2>Ancora da introdurre</h2><div class="chips">${non.map(k => `<span class="tag gray">${ALLERGENI[k]}</span>`).join('')}</div>`;
+     return h;
+   },
+   drill: k => k.startsWith('a:') ? drillAllergene(k.slice(2)) : null},
+
+  {id:'sintomi', g:'Salute', ico:'🩺', t:'Sintomi',
+   kpi: () => String(sP().length), sub: () => 'segnalazioni nel periodo',
+   spark: () => weeksInPeriod(8).map(w => S.sintomi.filter(s => s.data >= w && s.data <= addDays(w, 6)).length),
+   det: () => {
+     const l = sP(); if (!l.length) return `<div class="card muted">Nessun sintomo nel periodo.</div>`;
+     return `<h2>Per tipo</h2>${barsH(Object.keys(SINTOMI).map(k => ({k: 't:' + k, l: SINTOMI[k][0] + ' ' + SINTOMI[k][1], v: l.filter(s => s.tipo === k).length})).filter(x => x.v), 'sintomi')}<h2>Per settimana</h2>${weekCols(w => S.sintomi.filter(s => s.data >= w && s.data <= addDays(w, 6)).length, 'sintomi')}<h2>Intensità</h2>${barsH(['forte', 'media', 'lieve'].map(i => ({k: 'i:' + i, l: i, v: l.filter(s => s.intensita === i).length})).filter(x => x.v), 'sintomi')}`;
+   },
+   drill: k => k.startsWith('t:') ? {titolo: SINTOMI[k.slice(2)][1], sintomi: sP().filter(s => s.tipo === k.slice(2))} : k.startsWith('i:') ? {titolo: 'Intensità ' + k.slice(2), sintomi: sP().filter(s => s.intensita === k.slice(2))} : k.startsWith('w:') ? drillWeekPasti(k.slice(2)) : null},
+
+  {id:'sintomipre', g:'Salute', ico:'🔎', t:'Cosa ha mangiato prima dei sintomi',
+   kpi: () => String(sintomiEpisodi().length), sub: () => 'episodi analizzati (esclusa cacca regolare)',
+   det: () => {
+     const ep = sintomiEpisodi(); if (!ep.length) return `<div class="card muted">Servono sintomi segnalati (diversi dalla cacca regolare) e pasti registrati.</div>`;
+     const cnt = new Map(); ep.forEach(e => e.foods.forEach(k => cnt.set(k, (cnt.get(k) || 0) + 1)));
+     const fi = foodIndex(), tot = S.pasti.length;
+     const rows = [...cnt.entries()].filter(([k]) => ep.length < 3 || cnt.get(k) >= 2).sort((a, b) => b[1] - a[1]).slice(0, 12).map(([k, n]) => ({k: 'f:' + k, l: (fi.get(k) || {name: k}).name, v: n, t: `${n}/${ep.length}`}));
+     return `<div class="warn">Questa è solo una lettura dei dati: due cose vicine nel tempo non significano che una causi l'altra. Per dubbi o reazioni parlane con il pediatra.</div><h2>Alimenti nelle 24 ore prima</h2>${rows.length ? barsH(rows, 'sintomipre') : '<div class="muted">Non emerge nessun alimento ripetuto.</div>'}`;
+   },
+   drill: k => { if (!k.startsWith('f:')) return null; const key = k.slice(2), ep = sintomiEpisodi().filter(e => e.foods.includes(key)); const fi = foodIndex().get(key); return {titolo: `${fi ? fi.name : key}: episodi collegati`, sintomi: ep.map(e => e.s), pasti: ep.flatMap(e => e.pasti.filter(p => foodsOf(p.alimenti).some(f => fkey(f) === key)))}; }},
+
+  {id:'cacca', g:'Salute', ico:'💩', t:'Pancia e cacca',
+   kpi: () => { const l = S.sintomi.filter(s => s.tipo === 'cacca_ok').map(s => s.data).sort(); return l.length ? Math.round((parse(today()) - parse(l[l.length - 1])) / 864e5) + ' g' : '–'; }, sub: () => 'dall\'ultima cacca regolare segnata',
+   det: () => {
+     const l = sP().filter(s => ['cacca_ok', 'cacca_dura', 'cacca_molle'].includes(s.tipo)); if (!l.length) return `<div class="card muted">Segna «Cacca regolare / dura / molle» con + Sintomo per vedere l'andamento.</div>`;
+     const dura7 = S.sintomi.filter(s => s.tipo === 'cacca_dura' && s.data >= addDays(today(), -6)).length;
+     let h = barsH(['cacca_ok', 'cacca_dura', 'cacca_molle'].map(k => ({k: 't:' + k, l: SINTOMI[k][1], v: l.filter(s => s.tipo === k).length})), 'cacca') + `<h2>Per settimana</h2>` + weekCols(w => S.sintomi.filter(s => ['cacca_dura', 'cacca_molle'].includes(s.tipo) && s.data >= w && s.data <= addDays(w, 6)).length, 'cacca') + `<div class="muted small">Le colonne contano cacca dura o molle.</div>`;
+     if (dura7 >= 2) h += `<div class="warn">Dagli appunti per la stitichezza: calare un po' le fibre; prugne secche cotte e frullate, pere mature, mele cotte; attenzione a banana, riso e latticini (astringenti); olio e molta acqua.</div>`;
+     return h;
+   },
+   drill: k => k.startsWith('t:') ? {titolo: SINTOMI[k.slice(2)][1], sintomi: sP().filter(s => s.tipo === k.slice(2))} : k.startsWith('w:') ? drillWeekPasti(k.slice(2)) : null}
+];
+
+/* ---- funzioni di supporto alle statistiche ---- */
+const completo = p => (p.comp || []).includes('carbo') && (p.comp || []).includes('verdura') && (p.prot || []).length > 0;
+const oraMin = o => { const [h, m] = String(o).split(':').map(Number); return (h || 0) * 60 + (m || 0); };
+const lastDays = n => Array.from({length: n}, (_, i) => addDays(today(), -(n - 1 - i)));
+const targetAcqua = () => { const m = eta(imp().nascita).m; return m >= 12 ? 1200 : m >= 6 ? 800 : 0; };
+const giorniAcqua = () => S.giorni.filter(g => inPer(g.id) && g.acqua > 0);
+const usoPiatto = p => S.pasti.filter(x => normName(x.alimenti || '').includes(normName(p.nome))).length;
+const piattoUsato = p => usoPiatto(p) > 0;
+function daRiproporre() {
+  return [...foodIndex().values()].filter(e => e.count < 3 || e.lastG === 'no').sort((a, b) => a.count - b.count || a.name.localeCompare(b.name)).slice(0, 60);
+}
+function sintomiEpisodi() {
+  return S.sintomi.filter(s => s.tipo !== 'cacca_ok' && inPer(s.data)).map(s => {
+    const pasti = S.pasti.filter(p => p.data === s.data || p.data === addDays(s.data, -1));
+    const foods = new Set(); pasti.forEach(p => foodsOf(p.alimenti).forEach(f => foods.add(fkey(f))));
+    return {s, pasti, foods: [...foods]};
+  }).filter(e => e.pasti.length);
+}
+function stagStat() {
+  const res = {inn: 0, tot: 0, listIn: [], listOut: []}, fi = foodIndex();
+  const seenIn = new Set(), seenOut = new Set();
+  pP().forEach(p => foodsOf(p.alimenti).forEach(f => {
+    if (!isProduce(f)) return; const s = inSeason(f, p.data); if (s === null) return;
+    res.tot++; const e = fi.get(fkey(f)); if (!e) return;
+    if (s) { res.inn++; if (!seenIn.has(e.k)) { seenIn.add(e.k); res.listIn.push(e); } } else if (!seenOut.has(e.k)) { seenOut.add(e.k); res.listOut.push(e); }
+  }));
+  return res;
+}
+function menuStat(ws) {
+  let ok = 0, tot = 0; const righe = [];
+  ws.forEach(w => {
+    const menu = S.menu.find(x => x.id === w); if (!menu || !menu.giorni) return;
+    for (let d = 0; d < 7; d++) for (const m of ['pranzo', 'cena']) {
+      const c = menu.giorni[d] && menu.giorni[d][m]; if (!c || !(c.t || c.p)) continue;
+      const day = addDays(w, d); if (day > today()) continue;
+      const ps = S.pasti.filter(p => p.data === day && p.momento === m);
+      const hit = ps.some(p => (c.t && normName(p.alimenti || '').includes(normName(c.t))) || (c.p && (p.prot || []).includes(c.p)));
+      tot++; if (hit) ok++; righe.push({d: day, m, t: c.t || PROT_LBL[c.p], ok: hit});
+    }
+  });
+  return {ok, tot, righe};
+}
+function regoleSett(w) {
+  const ps = pastiWeek(w), F = getFreq(), cur = w === mondayOf(today()), out = [];
+  PROT.forEach(k => {
+    const c = ps.filter(p => (p.prot || []).includes(k)), [mn, mx] = F[k];
+    const ok = c.length > mx ? false : c.length >= mn ? true : cur ? null : false;
+    out.push({id: 'f_' + k, t: `${PROT_LBL[k]}: ${mn === mx ? mn : mn + '-' + mx} volte`, v: `${c.length} ${c.length === 1 ? 'fatta' : 'fatte'}`, d: ok === null ? 'Settimana in corso: puoi ancora arrivarci.' : ok ? 'Obiettivo centrato.' : c.length > mx ? 'Sopra l\'obiettivo.' : 'Sotto l\'obiettivo.', ok, pasti: c});
+  });
+  const multi = ps.filter(p => (p.prot || []).length > 1);
+  out.push({id: 'multi', t: 'Una sola fonte proteica per pasto', v: `${multi.length} pasti con più fonti`, d: 'Eccesso proteico tra 6 mesi e 2 anni = più rischio obesità.', ok: ps.length ? !multi.length : null, pasti: multi});
+  const ev = ps.filter(p => avvisiPasto(p).evita.length);
+  out.push({id: 'evita', t: 'Nessun cibo da evitare', v: `${ev.length} pasti con avvisi`, d: 'Miele, zucchero, succhi, margarina, funghi, crudi, ecc.', ok: ps.length ? !ev.length : null, pasti: ev});
+  const giorni = [...new Set(ps.map(p => p.data))], senzaT = giorni.filter(d => !ps.some(p => p.data === d && p.tavola));
+  out.push({id: 'tavola', t: 'Ogni giorno almeno un pasto con la famiglia', v: `${giorni.length - senzaT.length}/${giorni.length} giorni`, d: 'Soglia scelta dall\'app, dagli appunti: condividere il pasto con almeno un familiare.', ok: giorni.length ? !senzaT.length : null, pasti: ps.filter(p => senzaT.includes(p.data))});
+  const c = colorsOfPasti(ps), nc = Object.keys(c).filter(k => c[k].size).length;
+  out.push({id: 'colori', t: 'Almeno 4 colori su 5 nella settimana', v: `${nc}/5 colori`, d: 'Soglia scelta dall\'app, dagli appunti: seguire i 5 colori.', ok: ps.length ? (nc >= 4 ? true : cur ? null : false) : null, pasti: ps});
+  return out;
+}
+function drillAllergene(k) {
+  const a = allIntro(k); if (!a) return null;
+  const to = addDays(a.data, 3);
+  return {titolo: `${ALLERGENI[k]} · dal ${fmt(a.data)}`, html: `<div class="muted small">${(REAZ[a.reazione] || REAZ.da_valutare)[0]}${a.note ? ' · ' + esc(a.note) : ''}<br>Sotto: pasti con questo allergene e sintomi nei 3 giorni dall'introduzione.</div>`,
+    pasti: S.pasti.filter(p => p.data >= a.data && pastoHasAll(p, k)), sintomi: S.sintomi.filter(s => s.data >= a.data && s.data <= to)};
+}
+
+/* ---- viste ---- */
+function vStat() {
+  const per = `<div class="seg">${PERIODI.map(([v, l]) => `<button class="${ui.per === v ? 'on' : ''}" data-a="per" data-v="${v}">${l}</button>`).join('')}</div>`;
+  if (!ui.stat) {
+    const nGiorni = firstDate() ? Math.round((parse(today()) - parse(firstDate())) / 864e5) + 1 : 0;
+    let h = `<h1>Statistiche</h1><div class="muted">Tocca una scheda per aprirla, poi tocca grafici e righe per vedere i pasti dietro ai numeri.</div>${per}`;
+    h += `<div class="kgrid">${kpiBox(S.pasti.length, 'pasti totali')}${kpiBox(nGiorni, 'giorni di svezzamento')}${kpiBox(foodIndex().size, 'alimenti provati')}</div>`;
+    ['Panoramica', 'Rispetto delle regole', 'Gusti e varietà', 'La giornata', 'Salute'].forEach(g => {
+      h += `<h2>${g}</h2><div class="sgrid">` + STATS.filter(s => s.g === g).map(s => `<div class="card tap sc" data-a="stat" data-v="${s.id}"><div class="muted small">${s.ico} ${esc(s.t)}</div><div class="kv">${s.kpi()}</div><div class="muted small">${esc(s.sub())}</div>${s.spark ? spark(s.spark()) : ''}</div>`).join('') + `</div>`;
+    });
+    return h;
+  }
+  const def = STATS.find(s => s.id === ui.stat);
+  let h = `<button class="ghost small" data-a="statBack">‹ Tutte le statistiche</button><h1>${def.ico} ${esc(def.t)}</h1>${per}`;
+  h += def.det();
+  if (ui.drill && ui.drill.s === def.id) {
+    const r = def.drill(ui.drill.k);
+    if (r) {
+      h += `<div id="drill" class="drill"><div class="row between"><h3>${esc(r.titolo)}</h3><button class="ghost small" data-a="drillChiudi">Chiudi</button></div>${r.html || ''}`;
+      if (r.sintomi && r.sintomi.length) h += `<div class="muted small" style="margin-top:6px">Sintomi</div>` + [...r.sintomi].sort((a, b) => b.data.localeCompare(a.data)).map(s => `<div class="card tap" data-a="editSintomo" data-id="${s.id}"><div class="row between"><b>${(SINTOMI[s.tipo] || ['📝', 'Altro']).join(' ')}</b><span class="muted small">${fmt(s.data)}</span></div>${s.note ? `<div class="muted small">${esc(s.note)}</div>` : ''}</div>`).join('');
+      if (r.pasti) { const ps = sorted(r.pasti.filter(Boolean)); h += ps.length ? `<div class="muted small" style="margin-top:6px">${ps.length} ${ps.length === 1 ? 'pasto' : 'pasti'}</div>` + ps.slice(0, 40).map(p => pastoCard(p, true)).join('') + (ps.length > 40 ? `<div class="muted small">…e altri ${ps.length - 40}. Restringi il periodo per vederli.</div>` : '') : (r.html || (r.sintomi && r.sintomi.length) ? '' : '<div class="muted">Nessun pasto.</div>'); }
+      h += `</div>`;
+    }
+  }
+  return h;
+}
+A.stat = el => { ui.stat = el.dataset.v; ui.drill = null; render(); window.scrollTo(0, 0); };
+A.statBack = () => { ui.stat = null; ui.drill = null; render(); window.scrollTo(0, 0); };
+A.per = el => { ui.per = +el.dataset.v; ui.drill = null; render(); };
+A.swk = el => { ui.sw = addDays(ui.sw, +el.dataset.v); ui.drill = null; render(); };
+A.drill = el => { ui.drill = {s: el.dataset.s, k: el.dataset.v}; render(); setTimeout(() => { const e = $('#drill'); if (e) e.scrollIntoView({behavior: 'smooth', block: 'start'}); }, 40); };
+A.drillChiudi = () => { ui.drill = null; render(); };
+A.vaiGiorno = (el, e) => { e.preventDefault(); ui.day = el.dataset.v; ui.tab = 'oggi'; render(); window.scrollTo(0, 0); };
+
+/* ============================================================
+   VERSIONE 2: ricettario importato, spesa, scorte, menu automatico, acqua/latte, impostazioni, documenti
+   ============================================================ */
+const normName = s => String(s || '').toLowerCase().replace(/[^a-zà-ù0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+const getFreq = () => { const s = S.settings.find(x => x.id === 'main') || {}; const f = {...FREQ_DEF}; Object.keys(s.freq || {}).forEach(k => { if (f[k] && Array.isArray(s.freq[k])) f[k] = s.freq[k]; }); return f; };
+function stagioneNow(d = new Date()) { const m = d.getMonth() + 1; return m === 12 || m <= 2 ? 'inverno' : m <= 5 ? 'primavera' : m <= 8 ? 'estate' : 'autunno'; }
+let importing = false;
+function toast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3200); }
+const hhmm = () => { const d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+
+NOTE_RILASCIO.push({v: 2, titolo: 'Statistiche, ricettario e spesa', punti: [
+  'Nuova scheda Statistiche con 29 schede cliccabili: ogni grafico, barra e riga mostra i pasti e i sintomi che stanno dietro al numero. Periodo a scelta: 7 giorni, 3 mesi, tutto.',
+  'Ricettario: importazione di circa 170 idee dai documenti (autunno, inverno, merende, minestre), con ingredienti, fonte e pagina. Ricerca, filtri e piatti «da provare».',
+  'Dal piatto: ingredienti alla spesa, pianifica nel menu, «l\'ha mangiato».',
+  'Menu: pulsante «Proponi un menu» che rispetta le frequenze; spesa dal menu e importazione delle liste settimanali dei documenti.',
+  'Dispensa e congelatore con spunta di cosa hai già; frutta e verdura di stagione.',
+  'Oggi: acqua e latte con tasti rapidi; l\'ora dei pasti.',
+  'Impostazioni: obiettivi settimanali modificabili (carne, pesce, uova, legumi, formaggi).',
+  'Regole: aggiunte «Merende» e «Dove i documenti non coincidono».'
+]});
+
+/* ---- acqua e latte ---- */
+function cardAcqua(d) {
+  const g = S.giorni.find(x => x.id === d) || {}, m = eta(imp().nascita, parse(d)).m, t = m >= 12 ? 1200 : m >= 6 ? 800 : 0, a = g.acqua || 0;
+  return `<div class="card"><div class="row between"><h3>💧 Acqua</h3><span class="muted small">${a} ml${t ? ' su ' + t : ''}</span></div>${t ? `<div class="bar"><i style="width:${Math.min(100, pct(a, t))}%"></i></div>` : ''}
+    <div class="row wrap" style="margin-top:8px">${[50, 100, 200].map(n => `<button class="soft small" data-a="acq" data-v="${n}">+${n}</button>`).join('')}<button class="ghost small" data-a="acq" data-v="-50">−50</button></div>
+    <div class="row between" style="margin-top:12px"><h3>🍼 Latte (poppate / biberon)</h3><div class="row"><button class="ghost small" data-a="latte" data-v="-1">−</button><b>${g.latte || 0}</b><button class="soft small" data-a="latte" data-v="1">+</button></div></div></div>`;
+}
+async function aggGiorno(d, campo, delta) {
+  const g = S.giorni.find(x => x.id === d) || {}, nv = Math.max(0, (+g[campo] || 0) + delta);
+  await DB.put('giorni', d, {data: d, acqua: g.acqua || 0, latte: g.latte || 0, [campo]: nv});
+}
+A.acq = el => aggGiorno(ui.day, 'acqua', +el.dataset.v);
+A.latte = el => aggGiorno(ui.day, 'latte', +el.dataset.v);
+
+/* ---- piatti ---- */
+const listaPiatti = l => l.map(p => `<div class="card tap" data-a="dettPiatto" data-id="${p.id}"><div class="row between"><b>${esc(p.nome)}</b>${p.prot ? `<span class="tag peach">${PROT_ICO[p.prot]} ${PROT_LBL[p.prot]}</span>` : ''}</div>${p.fonte ? `<div class="muted small">${esc(p.fonte)}</div>` : ''}</div>`).join('') || '<div class="muted">Nessun piatto.</div>';
+function piattiFiltrati() {
+  const toks = normName(ui.q).split(' ').filter(Boolean), cur = stagioneNow();
+  return S.piatti.filter(p => {
+    if (toks.length) { const hay = normName(p.nome + ' ' + (p.ingredienti || '') + ' ' + (p.fonte || '')); if (!toks.every(t => hay.includes(t))) return false; }
+    if (ui.filtro === 'preferiti' && !p.piace) return false;
+    if (ui.filtro === 'daprovare' && piattoUsato(p)) return false;
+    if (PROT.includes(ui.filtro) && p.prot !== ui.filtro) return false;
+    if (ui.ft && (p.tipo || 'ricetta') !== ui.ft) return false;
+    if (ui.fs === 'ora' && !((p.stagione || '').includes(cur) || !p.stagione)) return false;
+    if (ui.fs && ui.fs !== 'ora' && !(p.stagione || '').includes(ui.fs)) return false;
+    return true;
+  }).sort((a, b) => a.nome.localeCompare(b.nome, 'it'));
+}
+function plistHtml() {
+  const l = piattiFiltrati();
+  return `<div class="muted small" style="margin:6px 0">${l.length} ${l.length === 1 ? 'piatto' : 'piatti'}</div>` + l.map(p => {
+    const n = usoPiatto(p), st = (p.stagione || '').split(',').filter(Boolean);
+    return `<div class="card tap" data-a="dettPiatto" data-id="${p.id}"><div class="row between"><h3>${esc(p.nome)}</h3><button class="chip ${p.piace ? 'on' : ''}" data-a="stella" data-id="${p.id}">${p.piace ? '⭐' : '☆'}</button></div>
+      ${p.prot ? `<span class="tag peach">${PROT_ICO[p.prot]} ${PROT_LBL[p.prot]}</span>` : ''}${p.tipo === 'merenda' ? '<span class="tag blue">merenda</span>' : ''}${p.tipo === 'idea' ? '<span class="tag gray">solo idea</span>' : ''}${st.map(s => `<span class="tag amber">${s}</span>`).join('')}${n ? `<span class="tag">mangiato ${n}×</span>` : ''}
+      ${p.fonte ? `<div class="muted small">${esc(p.fonte)}</div>` : ''}</div>`;
+  }).join('');
+}
+function vPiatti() {
+  let h = `<h1>Piatti</h1><div class="muted">${S.piatti.length} idee nel ricettario</div>`;
+  if (S.piatti.length < 30) h += `<div class="info" style="margin-top:10px">Per caricare le ricette dei documenti (autunno, inverno, merende, minestre) vai in <b>Altro › Importa dati iniziali</b>.</div>`;
+  h += `<input id="qPiatti" data-filter="piatti" placeholder="Cerca piatto o ingrediente" value="${esc(ui.q)}" style="margin:10px 0">`;
+  h += `<div class="chips" style="margin-bottom:8px">` + [['tutti', 'Tutti'], ...PROT.map(k => [k, PROT_ICO[k] + ' ' + PROT_LBL[k]]), ['preferiti', '⭐ Piacciono'], ['daprovare', '🆕 Da provare']].map(([k, l]) => `<button class="chip ${ui.filtro === k ? 'on' : ''}" data-a="filtro" data-v="${k}">${l}</button>`).join('') + `</div>`;
+  h += `<div class="row"><select data-c="fTipo"><option value="">Tutti i tipi</option><option value="ricetta" ${ui.ft === 'ricetta' ? 'selected' : ''}>Ricette</option><option value="merenda" ${ui.ft === 'merenda' ? 'selected' : ''}>Merende</option><option value="idea" ${ui.ft === 'idea' ? 'selected' : ''}>Idee base</option></select>
+    <select data-c="fStag"><option value="">Tutte le stagioni</option><option value="ora" ${ui.fs === 'ora' ? 'selected' : ''}>Di stagione ora</option><option value="autunno" ${ui.fs === 'autunno' ? 'selected' : ''}>Autunno</option><option value="inverno" ${ui.fs === 'inverno' ? 'selected' : ''}>Inverno</option></select></div>`;
+  h += `<div style="margin:10px 0"><button class="block" data-a="nuovoPiatto">+ Nuovo piatto</button></div><div id="plist">${plistHtml()}</div>`;
+  return h;
+}
+C.fTipo = el => { ui.ft = el.value; render(); };
+C.fStag = el => { ui.fs = el.value; render(); };
+function ingredientiLista(p) { return (p.ingredienti || '').split(';').map(x => x.trim()).filter(Boolean); }
+A.dettPiatto = el => {
+  const p = S.piatti.find(x => x.id === el.dataset.id); if (!p) return;
+  const ing = ingredientiLista(p), n = usoPiatto(p), mesi = eta(imp().nascita).m;
+  const fl = analizza(p.nome + ' ' + (p.ingredienti || ''), p.prot ? [p.prot] : [], mesi);
+  const ultimo = sorted(S.pasti.filter(x => normName(x.alimenti || '').includes(normName(p.nome))))[0];
+  F = {tipo: 'dett', id: p.id};
+  openSheet(`<h1>${esc(p.nome)}</h1><div>${p.prot ? `<span class="tag peach">${PROT_ICO[p.prot]} ${PROT_LBL[p.prot]}</span>` : ''}${(p.stagione || '').split(',').filter(Boolean).map(s => `<span class="tag amber">${s}</span>`).join('')}${p.tipo === 'merenda' ? '<span class="tag blue">merenda</span>' : ''}</div>
+    ${fl.evita.map(m => `<div class="warn">⚠️ ${esc(m)} (confrontalo con gli appunti prima di prepararlo)</div>`).join('')}
+    ${ing.length ? `<h2>Ingredienti</h2><ul class="pts">${ing.map(i => `<li>${esc(i)}</li>`).join('')}</ul>` : '<div class="muted" style="margin-top:8px">Nessun ingrediente salvato: è solo un\'idea o la ricetta è nel documento.</div>'}
+    ${p.fonte ? `<div class="muted small" style="margin-top:8px">Dove trovare la ricetta: ${esc(p.fonte)}</div>` : ''}${p.note ? `<div class="muted small">📝 ${esc(p.note)}</div>` : ''}
+    <div class="muted small" style="margin-top:6px">${n ? `Mangiato ${n} ${n === 1 ? 'volta' : 'volte'}, l'ultima il ${fmtLong(ultimo.data)}` : 'Non ancora provato'}</div>
+    <div id="pianBox"></div>
+    <div class="row wrap" style="margin-top:14px">${ing.length ? `<button class="soft" data-a="spesaPiatto" data-id="${p.id}">🛒 Ingredienti alla spesa</button>` : ''}<button class="soft" data-a="pianifica" data-id="${p.id}">📅 Pianifica</button><button class="soft" data-a="mangiatoPiatto" data-id="${p.id}">🍽️ L'ha mangiato</button></div>
+    <div class="row" style="margin-top:10px"><button class="ghost grow" data-a="editPiatto" data-id="${p.id}">Modifica</button><button class="ghost" data-a="chiudi">Chiudi</button></div>`);
+};
+A.spesaPiatto = async el => { const p = S.piatti.find(x => x.id === el.dataset.id); const n = await spesaAdd(ingredientiLista(p)); toast(n ? `${n} voci aggiunte alla spesa` : 'Erano già tutte nella spesa'); };
+A.mangiatoPiatto = el => { const p = S.piatti.find(x => x.id === el.dataset.id); closeSheet(); formPasto({momento: guessMomento(), alimenti: p.nome, prot: p.prot ? [p.prot] : []}); };
+A.pianifica = el => {
+  const dflt = addDays(today(), 1);
+  $('#pianBox').innerHTML = `<div class="card"><label class="f" style="margin-top:0">Quando</label><div class="row"><input type="date" id="pnData" value="${dflt}"><select id="pnMom" style="width:110px"><option value="pranzo">Pranzo</option><option value="cena">Cena</option></select></div><div style="margin-top:10px"><button class="block" data-a="pianificaOk" data-id="${el.dataset.id}">Metti nel menu</button></div></div>`;
+};
+A.pianificaOk = async el => { const p = S.piatti.find(x => x.id === el.dataset.id), d = $('#pnData').value, m = $('#pnMom').value; if (!d) return; await setSlot(d, m, p.nome, p.prot || ''); closeSheet(); toast(`Aggiunto al menu: ${fmt(d)}, ${MOMENTI[m].toLowerCase()}`); };
+async function setSlot(dateStr, m, t, p) {
+  const ws = mondayOf(dateStr), idx = dowOf(dateStr), cur = S.menu.find(x => x.id === ws);
+  const giorni = JSON.parse(JSON.stringify((cur && cur.giorni) || {}));
+  giorni[idx] = giorni[idx] || {}; giorni[idx][m] = {t, p};
+  await DB.put('menu', ws, {giorni});
+}
+async function spesaAdd(lines) {
+  const have = new Set(S.spesa.filter(i => !i.fatto).map(i => normName(i.testo))); let n = 0;
+  for (const t of lines) { const x = String(t).trim(); if (!x || have.has(normName(x))) continue; have.add(normName(x)); await DB.put('spesa', null, {testo: x, fatto: false, ts: Date.now() + n}); n++; }
+  return n;
+}
+A.importaLista = () => {
+  const l = S.riferimenti.filter(r => r.tipo === 'spesa').sort((a, b) => (a.stagione || '').localeCompare(b.stagione || '') || (a.settimana || 0) - (b.settimana || 0));
+  openSheet(`<h1>Importa una lista della spesa</h1><div class="muted">Dalle liste settimanali dei menù famiglia. Le voci già presenti non vengono duplicate.</div>` + (l.length ? l.map(r => `<div class="card"><div class="row between"><div><b>${esc(r.titolo)}</b><div class="muted small">${r.sezioni.reduce((s, x) => s + x.voci.length, 0)} voci</div></div><button class="soft small" data-a="addLista" data-id="${r.id}">Aggiungi</button></div></div>`).join('') : '<div class="card muted">Nessuna lista: importa i dati iniziali da Altro.</div>') + `<button class="ghost block" style="margin-top:10px" data-a="chiudi">Chiudi</button>`);
+};
+A.addLista = async el => { const r = S.riferimenti.find(x => x.id === el.dataset.id); const n = await spesaAdd(r.sezioni.flatMap(s => s.voci)); toast(n ? `${n} voci aggiunte` : 'Erano già tutte presenti'); };
+A.spesaMenu = async () => {
+  const menu = S.menu.find(x => x.id === ui.week); let n = 0, trovati = 0;
+  if (menu && menu.giorni) for (const d of Object.keys(menu.giorni)) for (const m of ['pranzo', 'cena']) {
+    const c = menu.giorni[d][m]; if (!c || !c.t) continue;
+    const p = S.piatti.find(x => normName(x.nome) === normName(c.t)); if (p && p.ingredienti) { trovati++; n += await spesaAdd(ingredientiLista(p)); }
+  }
+  toast(trovati ? `${n} voci aggiunte (${trovati} piatti)` : 'Nel menu non ci sono piatti del ricettario con ingredienti');
+};
+A.scorteMancano = async el => {
+  const ts = el.dataset.t === 'tutte' ? ['dispensa', 'freezer'] : [el.dataset.t]; let lines = [];
+  ts.forEach(t => { const r = S.riferimenti.find(x => x.tipo === t); if (!r) return; const ok = (S.scorte.find(x => x.id === t) || {}).ok || []; lines = lines.concat(r.sezioni.flatMap(s => s.voci).filter(v => !ok.includes(v))); });
+  if (!lines.length) { toast(S.riferimenti.some(r => r.tipo === 'dispensa') ? 'Hai già spuntato tutto' : 'Importa prima i dati iniziali (Altro)'); return; }
+  const n = await spesaAdd(lines); toast(n ? `${n} voci aggiunte alla spesa` : 'Erano già nella spesa');
+};
+C.scorta = async el => {
+  const t = el.dataset.t, r = S.riferimenti.find(x => x.tipo === t); if (!r) return;
+  const voci = r.sezioni.flatMap(s => s.voci), v = voci[+el.dataset.x], cur = (S.scorte.find(x => x.id === t) || {}).ok || [];
+  const ok = el.checked ? [...new Set([...cur, v])] : cur.filter(x => x !== v);
+  await DB.put('scorte', t, {ok});
+};
+
+/* ---- menu automatico ---- */
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+A.proponiMenu = async () => {
+  const ws = ui.week, F2 = getFreq(), menu = S.menu.find(x => x.id === ws) || {giorni: {}};
+  const giorni = JSON.parse(JSON.stringify(menu.giorni || {})), slots = [];
+  for (let d = 0; d < 7; d++) for (const m of ['pranzo', 'cena']) { const c = giorni[d] && giorni[d][m]; if (!(c && (c.t || c.p))) slots.push([d, m]); }
+  if (!slots.length) { toast('Il menu di questa settimana è già pieno'); return; }
+  const planned = {}; PROT.forEach(k => planned[k] = 0);
+  Object.values(giorni).forEach(g => ['pranzo', 'cena'].forEach(m => { const c = g[m]; if (c && c.p) planned[c.p]++; }));
+  const done = freqSettimana(ws).done, need = [];
+  PROT.forEach(k => { let n = F2[k][0] - planned[k] - done[k]; while (n-- > 0) need.push(k); });
+  const order = ['pesce', 'legumi', 'formaggi', 'uova', 'carne']; let guard = 0;
+  while (need.length < slots.length && guard++ < 40) { let added = false; for (const k of order) { if (need.length >= slots.length) break; if (planned[k] + done[k] + need.filter(x => x === k).length < F2[k][1]) { need.push(k); added = true; } } if (!added) break; }
+  shuffle(need); const bad = a => a.some((x, i) => i && x === a[i - 1]); for (let t = 0; t < 40 && bad(need); t++) shuffle(need);
+  const cur = stagioneNow(), usati = new Set(); let senza = 0;
+  slots.forEach(([d, m], i) => {
+    const k = need[i]; if (!k) return;
+    const cands = S.piatti.filter(p => p.prot === k && p.tipo !== 'merenda' && !usati.has(p.id));
+    const score = p => (p.piace ? 3 : 0) + ((p.stagione || '').includes(cur) || !p.stagione ? 2 : 0) + (p.ingredienti ? 1 : 0) - (usoPiatto(p) ? 2 : 0) + Math.random() * 2;
+    const pick = cands.sort((a, b) => score(b) - score(a))[0];
+    if (!pick) senza++; else usati.add(pick.id);
+    giorni[d] = giorni[d] || {}; giorni[d][m] = {t: pick ? pick.nome : '', p: k};
+  });
+  await DB.put('menu', ws, {giorni});
+  toast(senza ? 'Menu proposto: per alcune proteine non ci sono piatti nel ricettario (importa i dati iniziali)' : 'Menu proposto. Modificalo come preferisci.');
+};
+
+/* ---- importazione dei dati iniziali ---- */
+async function importaDati(file) {
+  const st = $('#impStatus'); const say = t => { ui.impMsg = t; if (st) st.textContent = t; };
+  try {
+    const d = JSON.parse(await file.text());
+    if (!d.piatti || !d.riferimenti) throw new Error('file non riconosciuto');
+    importing = true; say('Importazione in corso…');
+    const byId = new Map(S.piatti.map(p => [p.id, p])), byName = new Map(S.piatti.map(p => [normName(p.nome), p]));
+    let n = 0, nuovi = 0;
+    for (const np of d.piatti) {
+      const old = byId.get(np.id) || byName.get(normName(np.nome)), id = old ? old.id : np.id;
+      await DB.put('piatti', id, {nome: np.nome, prot: (old && old.prot) || np.prot || '', ingredienti: np.ingredienti || (old && old.ingredienti) || '', fonte: np.fonte || (old && old.fonte) || '', stagione: np.stagione || '', tipo: np.tipo || 'ricetta', note: (old && old.note) || '', piace: old ? !!old.piace : false});
+      n++; if (!old) nuovi++; if (n % 20 === 0) say(`Piatti: ${n}/${d.piatti.length}…`);
+    }
+    for (const r of d.riferimenti) await DB.put('riferimenti', r.id, r);
+    importing = false; say(`Fatto: ${n} piatti (${nuovi} nuovi) e ${d.riferimenti.length} elenchi importati.`); render();
+  } catch (e) { importing = false; say('Importazione non riuscita: ' + e.message); }
+}
+document.addEventListener('change', e => { if (e.target.id === 'fileImp' && e.target.files[0]) importaDati(e.target.files[0]); });
+document.addEventListener('input', e => { if (e.target.dataset && e.target.dataset.filter === 'piatti') { ui.q = e.target.value; const l = $('#plist'); if (l) l.innerHTML = plistHtml(); } });
+
+/* ---- regole: nuove sezioni ---- */
+REGOLE.splice(1, 0, ['Merende', ['Mattina: piccolo spuntino, basta frutta fresca, cotta o in purea.', 'Pomeriggio: si combinano i «fantastici 6»: frutta fresca, crema di frutta secca 100%, yogurt bianco intero (o vegetale senza zuccheri), cereali soffiati, avena in fiocchi, latte vaccino o bevande vegetali (il latte vaccino come alimento solo dai 12 mesi).', 'La frutta secca è molto calorica: usala nello spuntino del pomeriggio, alternandola con altri alimenti.', 'Frutta fresca o cotta va bene anche a fine pasto.', 'Niente biscottini e prodotti per l\'infanzia (appunti).']]);
+REGOLE.push(['Dove i documenti non coincidono', ['Carne: gli appunti dicono 2 volte a settimana, il Ricettario 2-3. Uova: 2 volte negli appunti, 1-2 nel Ricettario. L\'app usa gli appunti; puoi cambiare gli obiettivi in Altro › Impostazioni.', '«Biscotti alla banana» (Baby merende) contiene olio di semi: gli appunti sconsigliano gli oli vegetali.', 'Alcune ricette dei menù usano cacao amaro, vino bianco, sale o pepe: confrontale con gli appunti e col pediatra prima di prepararle.', 'Nei menù famiglia ci sono anche tabelle di grammature: non sono nell\'app, perché gli appunti preferiscono non usare quantità di riferimento.']]);
+REGOLE[0][1].push('Ripartizione delle responsabilità (Ricettario): i genitori scelgono cosa, quando e dove si mangia; il bambino decide quanto e se.');
+
+/* ---- documento per l'assistente ---- */
+function docAssistente() {
+  const storia = NOTE_RILASCIO.map(n => `- Versione ${n.v} - ${n.titolo}: ${n.punti.join(' ')}`).join('\n');
+  return `DOCUMENTO PER L'ASSISTENTE - APP "SVEZZAMENTO" (versione ${APP_VERSION})
+
+SCOPO
+Webapp personale e privata per gestire lo svezzamento di un bimbo nato il ${imp().nascita}, usata da due genitori quasi solo da telefono. Non è collegata ad account di lavoro. Si tengono solo nome e data di nascita. Le regole vengono dagli appunti della moglie (dietiste dei documenti: Valentina Masi, Verdiana Ramina/Nutricam). L'app è un promemoria delle regole della famiglia e non sostituisce il pediatra.
+
+STACK E FILE
+- index.html (HTML, CSS e JavaScript in un solo file, nessuna build) + config.js con la configurazione Firebase.
+- Hosting: GitHub Pages (repository pubblico: contiene SOLO index.html e config.js). Database: Firebase Firestore. Accesso: Firebase Authentication email e password per i due genitori. Regole Firestore: solo le due email autorizzate.
+- dati-iniziali.json (ricettario e liste ricavati dai PDF, che hanno clausola di non diffusione) NON va su GitHub: si importa dal telefono da Altro > Importa dati iniziali e finisce nel database privato.
+- Senza configurazione Firebase l'app parte in modalità prova (localStorage).
+- Per aggiornare: sostituire index.html nel repository (Add file > Upload files > Commit), non toccare config.js, chiudere e riaprire l'app.
+- Regole di lavoro: a ogni modifica aumentare APP_VERSION, aggiungere una voce in NOTE_RILASCIO e aggiornare questo documento quando serve.
+
+SCHEDE
+Oggi (pasti del giorno, acqua e latte, sintomi) / Settimana (Frequenze, Menu con «Proponi un menu», Spesa con importazione liste) / Piatti (ricettario con ricerca e filtri, dettaglio piatto) / Salute (Allergeni, Sintomi) / Statistiche (29 schede cliccabili con drill-down) / Altro (Regole, Tappe, Dispensa e congelatore, Frutta e verdura di stagione, Impostazioni, Novità, Importa dati iniziali, Documento, Guida).
+
+DATI (collezioni Firestore)
+- pasti: data (AAAA-MM-GG), ora (HH:MM, facoltativa), momento (colazione, spuntino, pranzo, merenda, cena), alimenti (testo libero), comp (carbo, verdura, frutta), prot (carne, pesce, uova, legumi, formaggi), consistenza (liscia, schiacciata, pezzettini, solida), gradimento (no, ni, si), tavola (bool), note, autore.
+- sintomi: data, tipo (cacca_ok, cacca_dura, cacca_molle, rigurgito, vomito, pelle, altro), intensita (lieve, media, forte), note.
+- allergeni: id = chiave (latte, uova, pesce, crostacei, fruttasecca, arachidi, sesamo, grano); data introduzione, reazione (da_valutare, nessuna, lieve, importante), note. Esiste solo se introdotto.
+- menu: id = data del lunedì; giorni[0..6][pranzo|cena] = {t: piatto, p: fonte proteica}.
+- spesa: testo, fatto, ts.
+- piatti: nome, prot, ingredienti (voci separate da «; »), fonte (documento e pagina), stagione (autunno, inverno), tipo (ricetta, merenda, idea), piace, note. Gli id che iniziano con imp_ vengono dall'importazione.
+- riferimenti: tipo dispensa, freezer, stagione (voci di frutta e verdura per autunno e inverno) e spesa (liste settimanali 1-4 di autunno e inverno), con sezioni[{titolo, voci}].
+- scorte: id = dispensa o freezer; ok = elenco delle voci già in casa.
+- giorni: id = data; acqua (ml), latte (numero di poppate o biberon).
+- settings/main: nome, nascita, freq (obiettivi settimanali per fonte proteica come [min, max], opzionale).
+
+REGOLE DELL'APP (dagli appunti)
+- Obiettivi settimanali di partenza: carne 2, pesce 3-4, uova 2, legumi 3-4, formaggi 2-3 (modificabili).
+- Avvisi non bloccanti: più fonti proteiche nello stesso pasto; cibi da evitare (miele, zucchero, succhi, biscottini/Plasmon, margarina e oli vegetali, funghi, crudi, frutti di mare, pane in cassetta, cracker salati, omogeneizzati, spezie piccanti; sotto i 12 mesi integrale e latte vaccino come alimento; dolci fino a 2 anni); allergeni nuovi uno alla volta.
+- Acqua: obiettivo 800 ml tra 6 e 12 mesi, 1200 ml da 1 a 3 anni.
+- Piatto ideale: 1/4 proteine, 1/4 frutta e verdura, 1/2 carboidrati. Niente tabelle di quantità (le grammature dei menù famiglia non sono importate).
+- I documenti non coincidono su alcune frequenze (carne, uova): vale quanto scritto negli appunti.
+
+STATISTICHE (ogni barra, colonna e riga apre il dettaglio con i pasti o i sintomi corrispondenti)
+Panoramica: pasti registrati, calendario dei giorni, questa settimana vs scorsa, percorso. Rispetto delle regole: regole della settimana, frequenze nel tempo, fonti proteiche, composizione del piatto, avvisi, pasti a tavola. Gusti e varietà: alimenti più frequenti, alimenti nuovi, da riproporre, varietà settimanale, 5 colori, frutta e verdura di stagione, gradimento, consistenze, ricettario provato/da provare, menu pianificato vs mangiato. La giornata: momenti, orari, chi registra, acqua, latte. Salute: allergeni, sintomi, cosa ha mangiato prima dei sintomi (con avvertenza: non è causalità), pancia e cacca.
+Gli alimenti sono letti dal testo dei pasti (separati da virgole, «e», «con»). Le liste di stagione dei documenti coprono solo autunno e inverno.
+
+PREFERENZE DI CHI USA L'APP
+Italiano, da telefono, budget zero (strumenti gratuiti), procedure passo passo senza competenze di sviluppo, avvisi non bloccanti, stile chiaro e rassicurante, statistiche cliccabili.
+
+STORIA DELLE VERSIONI
+${storia}
+
+PUNTI APERTI
+- Nome del bimbo da inserire in Altro > Impostazioni.
+- Promemoria per gli allergeni in osservazione non ancora previsti.
+- Liste di stagione di primavera ed estate non presenti nei documenti.
+- Il ricettario «Baby merende» è importato solo per le ricette lette dal PDF (24 su 40).
+`;
+}
+
+function vAltro() {
+  const back = `<button class="ghost small" data-a="altro" data-v="">‹ Indietro</button>`;
+  const {nome, nascita} = imp(), F2 = getFreq();
+  switch (ui.altro) {
+    case 'regole':
+      return back + `<h1>Regole e promemoria</h1><div class="muted">Dagli appunti di tua moglie e dai documenti. Sono promemoria delle vostre regole e non sostituiscono il pediatra.</div>` + REGOLE.map(([t, p]) => `<div class="card"><h3>${t}</h3><ul class="pts">${p.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`).join('');
+    case 'tappe': {
+      const m = eta(nascita).m, cur = tappaCorrente(m);
+      return back + `<h1>Tappe per età</h1>` + TAPPE.map(t => `<div class="card" ${t === cur ? 'style="border-color:var(--green);border-width:2px"' : ''}><h3>${t === cur ? '📍 ' : ''}${esc(t.titolo)}</h3><ul class="pts">${t.punti.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`).join('');
+    }
+    case 'impostazioni':
+      return back + `<h1>Impostazioni</h1><div class="card"><label class="f">Nome</label><input id="setNome" value="${esc(nome)}" placeholder="Nome del bimbo"><label class="f">Data di nascita</label><input id="setNasc" type="date" value="${nascita}">
+        <h3 style="margin-top:18px">Obiettivi settimanali</h3><div class="muted small">Quante volte a settimana (minimo e massimo). Di partenza gli appunti: carne 2, pesce 3-4, uova 2, legumi 3-4, formaggi 2-3.</div>
+        ${PROT.map(k => `<div class="row" style="margin-top:8px"><span style="width:110px">${PROT_ICO[k]} ${PROT_LBL[k]}</span><input type="number" min="0" max="14" id="fmin_${k}" value="${F2[k][0]}"><span>–</span><input type="number" min="0" max="14" id="fmax_${k}" value="${F2[k][1]}"></div>`).join('')}
+        <div style="margin-top:14px"><button class="block" data-a="salvaImp">Salva</button></div></div><div class="muted small">Nell'app teniamo solo nome e data di nascita.</div>`;
+    case 'novita':
+      return back + `<h1>Novità e versioni</h1>` + [...NOTE_RILASCIO].reverse().map(n => `<div class="card"><h3>Versione ${n.v} · ${esc(n.titolo)}</h3><ul class="pts">${n.punti.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`).join('');
+    case 'doc':
+      return back + `<h1>Documento per l'assistente</h1><div class="muted">Incollalo in una nuova chat con l'assistente quando vuoi modificare l'app: avrà già tutto il contesto.</div><div style="margin:10px 0"><button class="soft" data-a="copiaDoc">Copia il testo</button></div><div class="pre" id="docTxt">${esc(docAssistente())}</div>`;
+    case 'scorte': {
+      const blocchi = ['dispensa', 'freezer'].map(t => {
+        const r = S.riferimenti.find(x => x.tipo === t); if (!r) return '';
+        const ok = (S.scorte.find(x => x.id === t) || {}).ok || [], voci = r.sezioni.flatMap(s => s.voci);
+        return `<h2>${esc(r.titolo)}</h2><div class="card">${voci.map((v, i) => `<label class="check ${ok.includes(v) ? 'done' : ''}"><input type="checkbox" ${ok.includes(v) ? 'checked' : ''} data-c="scorta" data-t="${t}" data-x="${i}"><span class="grow">${esc(v)}</span></label>`).join('')}</div><button class="soft block" data-a="scorteMancano" data-t="${t}">🛒 Aggiungi alla spesa quelli che mancano</button>`;
+      }).join('');
+      return back + `<h1>Dispensa e congelatore</h1><div class="muted">Spunta quello che hai già in casa. I documenti consigliano di tenere sempre a portata di mano questi alimenti.</div>` + (blocchi || `<div class="card muted" style="margin-top:10px">Elenchi non ancora importati: vai in Altro › Importa dati iniziali.</div>`);
+    }
+    case 'stagione': {
+      const cur = stagioneNow(), l = S.riferimenti.filter(r => r.tipo === 'stagione');
+      return back + `<h1>Frutta e verdura di stagione</h1><div class="muted">Ora è ${cur}. I documenti riportano solo autunno e inverno.</div>` + (l.length ? l.map(r => `<div class="card" ${r.stagione === cur ? 'style="border-color:var(--green);border-width:2px"' : ''}><h3>${r.stagione === cur ? '📍 ' : ''}${esc(r.titolo)}</h3><div class="chips">${r.sezioni.flatMap(s => s.voci).map(v => `<span class="tag">${esc(v)}</span>`).join('')}</div></div>`).join('') : `<div class="card muted" style="margin-top:10px">Elenchi non ancora importati: vai in Altro › Importa dati iniziali.</div>`);
+    }
+    case 'import':
+      return back + `<h1>Importa dati iniziali</h1><div class="card"><div>Carica il file <b>dati-iniziali.json</b> (lo trovi nello zip): contiene il ricettario (circa ${'170'} idee con ingredienti e pagina del documento), le liste della spesa settimanali, la dispensa, il congelatore e la frutta/verdura di stagione.</div>
+        <div class="muted small" style="margin-top:8px">I dati finiscono nel tuo database privato. Puoi ripetere l'importazione quando vuoi: non crea doppioni e conserva le stelline e le note.</div>
+        <input type="file" id="fileImp" accept=".json,application/json" style="margin-top:12px"><div id="impStatus" class="info" style="margin-top:10px">${esc(ui.impMsg || 'Scegli il file per iniziare.')}</div></div>
+        <div class="muted small">Piatti ora nel ricettario: ${S.piatti.length}.</div>`;
+    case 'guida':
+      return back + `<h1>Guida all'app</h1>` + [
+        ['Oggi', 'Registra i pasti con «+ Pasto» (anche l\'ora). Mentre scrivi gli alimenti ti avvisa se c\'è qualcosa da evitare o un allergene nuovo. Sotto trovi acqua e latte con i tasti rapidi.'],
+        ['Settimana', 'Frequenze: contatori. Menu: scrivi i piatti o tocca «Proponi un menu». Spesa: lista da spuntare, importa una lista settimanale, aggiungi gli ingredienti del menu o quelli che mancano in dispensa.'],
+        ['Piatti', 'Il ricettario: cerca, filtra per proteina o stagione, apri un piatto per vedere gli ingredienti, metterli nella spesa, pianificarlo o segnarlo come mangiato.'],
+        ['Salute', 'Allergeni: segna quando introduci ciascuno e l\'esito. Sintomi: cacca, rigurgito, pelle e altro.'],
+        ['Statistiche', 'Tocca una scheda, poi un grafico o una riga per vedere i pasti dietro al numero. In alto scegli il periodo. Per i pasti toccati si può anche correggere il dato.'],
+        ['Aggiornamenti', 'Dopo un aggiornamento chiudi del tutto l\'app e riaprila. Il numero di versione è in fondo a questa pagina Altro.']
+      ].map(([t, x]) => `<div class="card"><h3>${t}</h3><div>${esc(x)}</div></div>`).join('');
+    default:
+      return `<h1>Altro</h1>` + [['regole', '📋', 'Regole e promemoria'], ['tappe', '🌱', 'Tappe per età'], ['scorte', '🧊', 'Dispensa e congelatore'], ['stagione', '🍂', 'Frutta e verdura di stagione'], ['impostazioni', '👶', 'Impostazioni'], ['import', '📥', 'Importa dati iniziali'], ['novita', '🆕', 'Novità e versioni'], ['doc', '🤖', 'Documento per l\'assistente'], ['guida', '❓', 'Guida all\'app']].map(([k, i, l]) => `<div class="card tap" data-a="altro" data-v="${k}"><div class="row"><span class="big">${i}</span><b class="grow">${l}</b><span class="muted">›</span></div></div>`).join('') +
+        (demo ? `<div class="card tap" data-a="demoDati"><div class="row"><span class="big">🧪</span><b class="grow">Carica dati di esempio (solo prova)</b></div></div><button class="ghost block" data-a="demoPulisci">Cancella i dati di prova</button>` : '') +
+        (DB.logout ? `<button class="ghost block" data-a="logout">Esci (${esc((DB.user && DB.user.email) || '')})</button>` : '') +
+        `<div class="muted small" style="text-align:center;margin-top:14px">Versione ${APP_VERSION}${demo ? ' · modalità prova' : ''}</div>`;
+  }
+}
+A.salvaImp = async () => {
+  const nome = $('#setNome').value.trim(), nascita = $('#setNasc').value; if (!nascita) { alert('Inserisci la data di nascita.'); return; }
+  const freq = {}; let bad = false;
+  PROT.forEach(k => { const a = +$('#fmin_' + k).value, b = +$('#fmax_' + k).value; if (isNaN(a) || isNaN(b) || a > b) bad = true; freq[k] = [a, b]; });
+  if (bad) { alert('Controlla gli obiettivi: il minimo non può superare il massimo.'); return; }
+  await DB.put('settings', 'main', {nome, nascita, freq}); ui.altro = null; render();
+};
+
+
+/* ---- solo modalità prova: dati di esempio per vedere subito le statistiche ---- */
+A.demoDati = async () => {
+  if (!demo) return;
+  if (!confirm('Caricare dati di esempio (circa 6 settimane di pasti inventati)?')) return;
+  importing = true;
+  const R = a => a[Math.floor(Math.random() * a.length)], M = [['Pastina con ragù di lenticchie', ['carbo'], 'legumi'], ['Orata al forno con patate e zucchine', ['carbo', 'verdura'], 'pesce'], ['Risotto con pollo e carote', ['carbo', 'verdura'], 'carne'], ['Frittata con spinaci e pane tostato', ['carbo', 'verdura'], 'uova'], ['Pasta con merluzzo e broccoli', ['carbo', 'verdura'], 'pesce'], ['Polenta con sugo di fagioli, zucchine', ['carbo', 'verdura'], 'legumi'], ['Pasta con ricotta e broccoli', ['carbo', 'verdura'], 'formaggi'], ['Orzotto con peperoni e piselli', ['carbo', 'verdura'], 'legumi'], ['Crema di zucca e ceci con miglio', ['carbo', 'verdura'], 'legumi']];
+  for (let n = -40; n <= 0; n++) {
+    const d = addDays(today(), n); if (n < 0 && Math.random() < 0.1) continue;
+    await DB.put('pasti', null, {data: d, ora: '08:' + pad(10 + Math.floor(Math.random() * 40)), momento: 'colazione', alimenti: R(['Yogurt bianco intero con pera matura', 'Porridge con mela e cannella', 'Pane tostato con crema di mandorle']), comp: ['frutta'], prot: [], consistenza: 'liscia', gradimento: R(['si', 'si', 'ni']), tavola: Math.random() < .6, note: '', autore: 'prova'});
+    for (const [m, h] of [['pranzo', '12'], ['cena', '19']]) { const x = R(M); await DB.put('pasti', null, {data: d, ora: h + ':' + pad(Math.floor(Math.random() * 50)), momento: m, alimenti: x[0] + (Math.random() < .05 ? ' e un po\' di miele' : ''), comp: x[1], prot: [x[2]], consistenza: R(['schiacciata', 'pezzettini', 'solida', 'schiacciata']), gradimento: R(['si', 'si', 'ni', 'no']), tavola: Math.random() < .75, note: '', autore: 'prova'}); }
+    if (n > -14) await DB.put('giorni', d, {data: d, acqua: R([300, 500, 700, 800]), latte: 3 + Math.floor(Math.random() * 4)});
+  }
+  for (let k = 0; k < 14; k++) await DB.put('sintomi', null, {data: addDays(today(), -Math.floor(Math.random() * 35)), tipo: R(['cacca_ok', 'cacca_ok', 'cacca_dura', 'cacca_molle', 'rigurgito', 'pelle']), intensita: R(['', 'lieve', 'media']), note: ''});
+  await DB.put('allergeni', 'uova', {data: addDays(today(), -35), reazione: 'nessuna', note: ''}); await DB.put('allergeni', 'latte', {data: addDays(today(), -20), reazione: 'nessuna', note: ''}); await DB.put('allergeni', 'pesce', {data: addDays(today(), -4), reazione: 'da_valutare', note: ''});
+  for (let w = 0; w < 4; w++) { const g = {}; for (let dd = 0; dd < 7; dd++) { const x = R(M), y = R(M); g[dd] = {pranzo: {t: x[0], p: x[2]}, cena: {t: y[0], p: y[2]}}; } await DB.put('menu', addDays(mondayOf(today()), -7 * w), {giorni: g}); }
+  importing = false; render(); toast('Dati di esempio caricati: apri Statistiche');
+};
+A.demoPulisci = () => { if (!demo) return; if (confirm('Cancellare tutti i dati di prova?')) { Object.keys(localStorage).filter(k => k.startsWith('svz_')).forEach(k => localStorage.removeItem(k)); location.reload(); } };
+
+/* ---------- avvio ---------- */
+function startSubscriptions() {
+  COLS.forEach(c => DB.subscribe(c, arr => { S[c] = arr; if (!importing && $('#sheet').classList.contains('hidden')) render(); }));
+}
+function loginView(msg = '') {
+  $('#nav').style.display = 'none';
+  $('#app').innerHTML = `<div class="login"><h1>Svezzamento 🥣</h1><div class="muted">Accedi con l'email e la password create per voi due.</div><div class="card"><label class="f">Email</label><input id="lgMail" type="email" autocomplete="username"><label class="f">Password</label><input id="lgPwd" type="password" autocomplete="current-password" data-enter="doLogin"><div style="margin-top:14px"><button class="block" data-a="doLogin">Entra</button></div>${msg ? `<div class="warn red">${esc(msg)}</div>` : ''}</div></div>`;
+}
+A.doLogin = async () => {
+  try { await DB.login($('#lgMail').value.trim(), $('#lgPwd').value); }
+  catch (e) { const m = {'auth/invalid-credential':'Email o password non corrette.','auth/invalid-email':'Email non valida.','auth/too-many-requests':'Troppi tentativi: riprova tra qualche minuto.','auth/network-request-failed':'Nessuna connessione.'}[e.code] || ('Accesso non riuscito (' + (e.code || e.message) + ').'); loginView(m); }
+};
+(async function main() {
+  $('#app').innerHTML = '<div class="muted" style="margin-top:30vh;text-align:center">Caricamento…</div>';
+  try {
+    if (demo) { DB = mockDB(); startSubscriptions(); render(); }
+    else {
+      DB = await firebaseDB();
+      let started = false;
+      DB.onUser(u => {
+        DB.user = u;
+        if (!u) { loginView(); return; }
+        if (!started) { started = true; startSubscriptions(); }
+        render();
+      });
+    }
+  } catch (e) { $('#app').innerHTML = `<div class="warn red">Impossibile avviare l'app: ${esc(e.message)}. Controlla config.js e la connessione.</div>`; }
+})();
+</script>
+</body>
+</html>
